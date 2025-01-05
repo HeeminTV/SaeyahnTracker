@@ -1,36 +1,55 @@
 @ECHO OFF
-if false==true (
-	SET SAEYAHN_CONHOST=1
-	CALL CONHOST %0
-	EXIT /B
-)
+REM if NOT "%~1"=="FIRSTWINDOW" (
+	REM SET SAEYAHN_CONHOST=1
+	REM START CONHOST %0 FIRSTWINDOW
+	
+REM )
 SETLOCAL ENABLEDELAYEDEXPANSION
 call :RESET_VARIABLES
 TITLE SaeyahnTracker Version !VERSIONINFO!
+SET B1=[5m
+set B2=[25m
 chcp 65001 >nul
 mode 120, 30 >nul
 REM COLOR 8F
-
+SET /A ROWS=0
 :DRAWLOGO 
-SET /A DISPLAYED_MODEY=ROWS+20
-REM MODE 120, !DISPLAYED_MODEY!
-REM echo [0m
+for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) DO SET /A ROWS+=1
+IF !CURR_TAV! EQU 0 (
+	SET "DISPLAYED_CURR_TAV=TRACKER  SECTION"
+	SET "B1="
+	SET "B2="
+	SET "B3="
+	SET "B4="
+) ELSE IF !CURR_TAV! EQU 1 ( 
+	SET "DISPLAYED_CURR_TAV=SONG INFORMATION"
+	SET B1=[5m
+	set B2=[25m
+	SET "B3="
+	SET "B4="
+) ELSE IF !CURR_TAV! EQU 2 ( 
+	SET "DISPLAYED_CURR_TAV=MAIN    TABULATE"
+	SET B3=[5m
+	set B4=[25m
+	SET "B1="
+	SET "B2="
+)
 CLS
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
 echo [48;2;0;0;61m┌[7m[F9][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
-ECHO └──[7m[O][27m_OPEN──[7m[S][27m_SAVE──[7m[R][27m_RENDER──[7m[C][27m_CHANGE SOUND DRIVER────────────────────────────────────────────────────────────┘[0m
+ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![C]!B4![27m_CHANGE SOUND DRIVER────────────────────────────────────────────────────────────┘[0m
 echo ┌[7m[F3][27m─ SONG INFORMATION ──────────────────────────────────────────────────────────────────────────────────────────────┐
-echo ^|  ________________\       /________________	[7m[B][27m_BPM		: !BPM!	^|[7m[T][27m_SONG TITLE	: [4m!DISPLAYED_SONGNAME![24m ^|
-echo ^|  ^|                \     /                ^|	[7m[R][27m_ROWS	: !ROWS!	^|[7m[A][27m_AUTHOR	: [4m!DISPLAYED_SONGAUTHOR![24m ^|
-echo ^|  ^|____ _____ _____ \   / _____ _   _ _   ^|	[7m[H][27m_HIGHLIGHT	: !HIGHLIGHT!	^|
-echo ^|      ^| ^|   ^| ^|      \ /  ^|   ^| ^|   ^| ^|\  ^|	[7m[S][27m_EDIT STEP^(S^): !EDITSTEPS!	^|
+echo ^|  ________________\       /________________	[7m!B1![B]!B2![27m_BPM		: !BPM!	^|[7m!B1![T]!B2![27m_SONG TITLE	: [4m!DISPLAYED_SONGNAME![24m ^|
+echo ^|  ^|                \     /                ^|	[7m!B1![R]!B2![27m_ROWS	: !ROWS!	^|[7m!B1![A]!B2![27m_AUTHOR	: [4m!DISPLAYED_SONGAUTHOR![24m ^|
+echo ^|  ^|____ _____ _____ \   / _____ _   _ _   ^|	[7m!B1![H]!B2![27m_HIGHLIGHT	: !HIGHLIGHT!	^|
+echo ^|      ^| ^|   ^| ^|      \ /  ^|   ^| ^|   ^| ^|\  ^|	[7m!B1![S]!B2![27m_EDIT STEP^(S^): !EDITSTEPS!	^|
 echo ^|      ^| ^|___^| ^|____   ^|   ^|___^| ^|___^| ^| \ ^|
 echo ^|      ^| ^|   ^| ^|       ^|   ^|   ^| ^|   ^| ^|  \^|
 echo ^|  ____^| ^|   ^| ^|____   ^|   ^|   ^| ^|   ^| ^|   ^|
 echo ^|  	Tracker Version !VERSIONINFO!
-ECHO └─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ECHO └──YOU ARE IN [5m[3m!DISPLAYED_CURR_TAV![23m[25m────────────────────────────────────────────────────────────────────────────────────────┘
 
 :DRAWTRACKER
 echo [12;0H
@@ -49,9 +68,7 @@ IF !ROWS! LEQ 12 (
 SET /A SCROLL_MAX=SCROLL_MIN+12
 set i=0
 for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
-	REM set /a i+=1
 	SET "FRAMESHOWTEMP_ALL="
-	REM echo %%b !i!
 	for /f "tokens=1,2,3,4,5,6 delims=:" %%1 in ("%%b") do (
 		
 		set "FRAMESHOWTEMP_7=%%1"
@@ -60,8 +77,36 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 		set "FRAMESHOWTEMP_10=%%4"
 		set "FRAMESHOWTEMP_11=%%5"
 		set "FRAMESHOWTEMP_12=%%6"
+		
+		IF !I! LSS !SCROLL_MIN! SET /A i+=1
+		REM pause >nul
 		FOR /L %%C IN (7, 1, 12) do (
-			SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+			IF %%C EQU !FRAMESHOWTEMP_CURSORCH! (
+				IF !CURSOR_Y! EQU !i! (
+					IF !FRAMESHOWTEMP_CURSORINDEX! EQU 0 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL![7m!FRAMESHOWTEMP_%%C:~0,3![27m:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|" 
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 1 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:[7m!FRAMESHOWTEMP_%%C:~3,1![27m!FRAMESHOWTEMP_%%C:~4,1!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|" 
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 2 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,1![7m!FRAMESHOWTEMP_%%C:~4,1![27m:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 3 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:[7m!FRAMESHOWTEMP_%%C:~5,1![27m:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 4 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:[7m!FRAMESHOWTEMP_%%C:~6,1![27m!FRAMESHOWTEMP_%%C:~7,2!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|" 
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 5 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~7,1![7m!FRAMESHOWTEMP_%%C:~8,1![27m!FRAMESHOWTEMP_%%C:~9,1!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|" 
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 6 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,2![7m!FRAMESHOWTEMP_%%C:~8,1![27m:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 7 (
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:[7m!FRAMESHOWTEMP_%%C:~9,1![27m!FRAMESHOWTEMP_%%C:~10,2!^|:^|"
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 8 ( 
+						SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,1![7m!FRAMESHOWTEMP_%%C:~10,1![27m!FRAMESHOWTEMP_%%C:~11,1!^|:^|"
+					) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 9 SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,2![7m!FRAMESHOWTEMP_%%C:~11,1![27m^|:^|"
+					REM SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+				) else SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+			) ELSE ( 
+				SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL!!FRAMESHOWTEMP_%%C:~0,3!:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!^|:^|"
+			)
 		)
 		IF !I! GEQ !SCROLL_MIN! IF !I! LEQ !SCROLL_MAX! IF !CURSOR_Y! EQU !I! ( 
 			IF !CURSOR_REC! EQU 0 ( 
@@ -86,14 +131,35 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 :LOOPEXIT1
 powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
 if "!errorlevel!"=="40" set /a CURSOR_Y+=!EDITSTEPS!
+REM set /a CURSOR_Y+=!EDITSTEPS!
+if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
+	ECHO [0m
+	IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
+	IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
+	IF !ERRORLEVEL! EQU 120 SET CURR_TAV=2
+	GOTO DRAWLOGO
+)
+REM ) else 
 if "!errorlevel!"=="38" set /a CURSOR_Y-=!EDITSTEPS!
 IF "!ERRORLEVEL!"=="36" set CURSOR_Y=0
 IF "!ERRORLEVEL!"=="35" SET /A CURSOR_Y=ROWS-1
 if "!errorlevel!"=="34" set /a CURSOR_Y+=!EDITSTEPS! * 4
 if "!errorlevel!"=="33" set /a CURSOR_Y-=!EDITSTEPS! * 4
-IF !CURSOR_Y! LSS 0 SET /A CURSOR_Y=ROWS-1
-IF !CURSOR_Y! GEQ !ROWS! SET /A CURSOR_Y=0
+
+IF !CURSOR_Y! LSS 0 SET /A CURSOR_Y+=ROWS
+IF !CURSOR_Y! GEQ !ROWS! SET /A CURSOR_Y-=ROWS
+
+if "!errorlevel!"=="39" set /a CURSOR_X+=1
+if "!errorlevel!"=="37" set /a CURSOR_X-=1
+IF "!ERRORLEVEL!"=="9" SET /A CURSOR_X+=10
+
+IF !CURSOR_X! LSS 0 SET CURSOR_X=59
+IF !CURSOR_X! GTR 59 SET /A CURSOR_X-=60
 IF "!ERRORLEVEL!"=="32" IF !CURSOR_REC! EQU 0 ( SET CURSOR_REC=1 ) ELSE SET CURSOR_REC=0
+IF "!ERRORLEVEL!"=="13" IF !SONG_PLAYING! EQU 0 ( SET SONG_PLAYING=1 ) ELSE SET SONG_PLAYING=0
+SET /A "FRAMESHOWTEMP_CURSORCH=(CURSOR_X - 0) / 10 + 7"
+SET /A "FRAMESHOWTEMP_CURSORINDEX=CURSOR_X - ((FRAMESHOWTEMP_CURSORCH - 7) * 10)"
+REM )
 REM ECHO !CURSOR_Y!
 REM PAUSE
 GOTO DRAWTRACKER
@@ -108,19 +174,24 @@ SET "TRACKERHIGHLIGHTCOLOUR2=48;2;64;84;101m"
 
 SET BPM=165
 SET HIGHLIGHT=4
-SET ROWS=64
+REM SET ROWS=64
 SET "SONGNAME=UNTITLED
 SET "SONGAUTHOR=FUCK"
 SET EDITSTEPS=1
 REM SET "
 
-SET CURR_TAV=1
+SET CURR_TAV=0
 SET CURR_FRAME=0
 SET FRAMES=1
 
 SET CURSOR_X=0
 SET CURSOR_Y=0
 SET CURSOR_REC=0
+SET FRAMESHOWTEMP_CURSORCH=7
+SET FRAMESHOWTEMP_CURSORINDEX=0
+
+SET SONG_PLAYING=0
+
 SET CH1_STAT_CURRNOTE=___
 SET CH2_STAT_CURRNOTE=C#3
 SET CH3_STAT_CURRNOTE=F#4
