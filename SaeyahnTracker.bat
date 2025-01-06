@@ -16,13 +16,33 @@ set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
 set "userfileprefix=!APPDATA!\SaeyahnTracker\SaeyahnTracker-USER_"
 IF NOT EXIST "!APPDATA!\SaeyahnTracker\" mkdir "!APPDATA!\SaeyahnTracker\"
 
-echo result = msgbox^("Playing...", 32 , "SaeyahnTracker"^) > "!TEMPFILEPREFIX!PLAYINGMSGBOX.VBS"
-echo createobject^("Scripting.FileSystemObject"^).DeleteFile Wscript.Arguments^(0^) >> "!TEMPFILEPREFIX!PLAYINGMSGBOX.VBS"
+echo ^<# : has been brought from https://stackoverflow.com/questions/41132764/detect-keystrokes-in-different-window-with-batch > "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo @echo off ^& setlocal >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo powershell -noprofile "iex (${%%~f0} | out-string)" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo DEL /Q "!TEMPFILEPREFIX!%%~1.TMP" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo goto :EOF >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo : end #^> >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo # import GetAsyncKeyState(^) >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo Add-Type user32_dll @' >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo     [DllImport("user32.dll"^)] >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo     public static extern short GetAsyncKeyState(int vKey); >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo '@ -namespace System >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo Add-Type -As System.Windows.Forms >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo function keyPressed($key^) { return [user32_dll]::GetAsyncKeyState([Windows.Forms.Keys]::$key) -band 32768 } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo while ($true^) { >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo     $enterkey = keyPressed "Enter" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo     if ($enterkey^) { break } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo     start-sleep -milliseconds 40 >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo $Host.UI.RawUI.FlushInputBuffer^(^) >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 
 echo WScript.Echo(new Date().getTime()); > "!TEMPFILEPREFIX!UNIXTIME.JS"
 
+echo CreateObject("Wscript.Shell").Run "" ^& WScript.Arguments(0) ^& "", 0, False > "!TEMPFILEPREFIX!INVISIBLE.VBS"
+
 call :RESET_VARIABLES
-TITLE SaeyahnTracker Version !VERSIONINFO!
+TITLE SaeyahnTracker Version !VERSIONINFO!	
+
 SET B1=[5m
 set B2=[25m
 chcp 65001 >nul
@@ -35,18 +55,33 @@ IF !CURR_TAV! EQU 0 (
 	SET "B2="
 	SET "B3="
 	SET "B4="
-) ELSE IF !CURR_TAV! EQU 1 ( 
-	SET "DISPLAYED_CURR_TAV=SONG INFORMATION"
-	SET B1=[5m
-	set B2=[25m
-	SET "B3="
-	SET "B4="
-) ELSE IF !CURR_TAV! EQU 2 ( 
-	SET "DISPLAYED_CURR_TAV=MAIN    TABULATE"
-	SET B3=[5m
-	set B4=[25m
-	SET "B1="
-	SET "B2="
+	SET "TRACKERDEFAULTCOLOUR=24;34;51"
+	SET "TRACKERHIGHLIGHTCOLOUR1=54;64;81"
+	SET "TRACKERHIGHLIGHTCOLOUR2=64;84;101"
+	SET "TRACKERCURSORPREVIEWCOLOUR=64;64;192"
+	SET "TRACKERCURSORRECORDCOLOUR=128;64;64"
+	SET "TRACKERTABCOLOUR=64;64;96"
+) ELSE (
+	CALL :AVERAGEANSICOLOR TRACKERDEFAULTCOLOUR
+	CALL :AVERAGEANSICOLOR TRACKERHIGHLIGHTCOLOUR1
+	CALL :AVERAGEANSICOLOR TRACKERHIGHLIGHTCOLOUR2
+	CALL :AVERAGEANSICOLOR TRACKERCURSORPREVIEWCOLOUR
+	CALL :AVERAGEANSICOLOR TRACKERCURSORRECORDCOLOUR
+	CALL :AVERAGEANSICOLOR TRACKERTABCOLOUR
+
+	IF !CURR_TAV! EQU 1 ( 
+		SET "DISPLAYED_CURR_TAV=SONG INFORMATION"
+		SET B1=[5m
+		set B2=[25m
+		SET "B3="
+		SET "B4="
+	) ELSE IF !CURR_TAV! EQU 2 ( 
+		SET "DISPLAYED_CURR_TAV=MAIN    TABULATE"
+		SET "B1="
+		SET "B2="
+		SET B3=[5m
+		SET B4=[25m
+	)
 )
 ECHO [0m
 CLS
@@ -54,7 +89,7 @@ CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
 echo [48;2;0;0;61m┌[7m[F5][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
-ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![C]!B4![27m_CHANGE SOUND DRIVER────────────────────────────────────────────────────────────┘[0m
+ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
 echo ┌[7m[F3][27m─ SONG INFORMATION ──────────────────────────────────────────────────────────────────────────────────────────────┐
 
@@ -82,13 +117,13 @@ IF !SONG_PLAYING! EQU 0 (
 REM PAUSE
 :DRAWTRACKER
 echo [12;0H
-echo [48;2;64;64;96m┌[7m[F1][27m_TRACKER SECTION ──────────────────────────────────────────────────────────────────────────────────────────┐
+echo [48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m_TRACKER SECTION ──────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO │   Channel 1    │:│   Channel 2    │:│   Channel 3    │:│   Channel 4    │:│   Channel 5    │:│   Channel 6    │
 
 ECHO │  Playing !CH1_STAT_CURRNOTE!   │:│  Playing !CH2_STAT_CURRNOTE!   │:│  Playing !CH3_STAT_CURRNOTE!   │:│  Playing !CH4_STAT_CURRNOTE!   │:│  Playing !CH5_STAT_CURRNOTE!   │:│  Playing !CH6_STAT_CURRNOTE!   │
 
-ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[!TRACKERDEFAULTCOLOUR!
+ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
 
 IF !ROWS! LEQ 12 (
 	SET SCROLL_MIN=0
@@ -99,19 +134,19 @@ IF !ROWS! LEQ 12 (
 	) ELSE SET SCROLL_MIN=0
 )
 SET /A SCROLL_MAX=SCROLL_MIN+12
-set i=0
+set I=0
 for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 	SET "FRAMESHOWTEMP_ALL="
 	IF !I! LSS !SCROLL_MIN! SET /A I+=1
-	for /f "tokens=1,2,3,4,5,6 delims=:" %%1 in ("%%b") do (
+	IF !I! GEQ !SCROLL_MIN! for /f "tokens=1,2,3,4,5,6 delims=:" %%1 in ("%%b") do (
 		set "FRAMESHOWTEMP_7=%%1"
 		set "FRAMESHOWTEMP_8=%%2"
 		set "FRAMESHOWTEMP_9=%%3"
 		set "FRAMESHOWTEMP_10=%%4"
 		set "FRAMESHOWTEMP_11=%%5"
-		set "FRAMESHOWTEMP_12=%%6"		
+		set "FRAMESHOWTEMP_12=%%6"	
 		FOR /L %%C IN (7, 1, 12) do (
-			IF !SONG_PLAYING! EQU 0 (
+			IF !SONG_PLAYING!!CURR_TAV! EQU 00 (
 				IF %%C EQU !FRAMESHOWTEMP_CURSORCH! (
 					IF !CURSOR_Y! EQU !i! (					
 						IF !FRAMESHOWTEMP_CURSORINDEX! EQU 0 ( 
@@ -139,8 +174,8 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 		)
 		IF !I! GEQ !SCROLL_MIN! IF !I! LEQ !SCROLL_MAX! IF !CURSOR_Y! EQU !I! ( 
 			IF !CURSOR_REC! EQU 0 ( 
-				ECHO [48;2;64;64;192m│!FRAMESHOWTEMP_ALL:~0,-2! [!TRACKERDEFAULTCOLOUR! !i! 
-			) ELSE ECHO [48;2;127;64;64m│!FRAMESHOWTEMP_ALL:~0,-2! [!TRACKERDEFAULTCOLOUR! !i! 
+				ECHO [48;2;!TRACKERCURSORPREVIEWCOLOUR!m│!FRAMESHOWTEMP_ALL:~0,-2! [48;2;!TRACKERDEFAULTCOLOUR!m !i! 
+			) ELSE ECHO [48;2;!TRACKERCURSORRECORDCOLOUR!m│!FRAMESHOWTEMP_ALL:~0,-2! [48;2;!TRACKERDEFAULTCOLOUR!m !i! 
 			
 		) ELSE (
 			set /a "FRAMESHOWTEMP_HIGHLIGHT1=!i! %% HIGHLIGHT"
@@ -149,8 +184,8 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 				ECHO │!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m
 			) ELSE (
 				IF !FRAMESHOWTEMP_HIGHLIGHT2! NEQ 0 ( 
-					ECHO [!TRACKERHIGHLIGHTCOLOUR1!│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[!TRACKERDEFAULTCOLOUR! 
-				) ELSE ECHO [!TRACKERHIGHLIGHTCOLOUR2!│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[!TRACKERDEFAULTCOLOUR! 
+					ECHO [48;2;!TRACKERHIGHLIGHTCOLOUR1!m│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[48;2;!TRACKERDEFAULTCOLOUR!m 
+				) ELSE ECHO [48;2;!TRACKERHIGHLIGHTCOLOUR2!m│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[48;2;!TRACKERDEFAULTCOLOUR!m 
 			)
 		)
 		IF !I! GEQ !SCROLL_MAX! GOTO LOOPEXIT1 
@@ -181,16 +216,17 @@ IF !SONG_PLAYING! EQU 0 (
 
 	IF "!ERRORLEVEL!"=="13" ( 
 		IF !SONG_PLAYING! EQU 0 ( 
-			FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX_PLAYING=%%A"
-			ECHO. > "!TEMPFILEPREFIX!!UNIX_PLAYING!.TMP"
-			SET SONG_PLAYING=1 
-			START /MIN CSCRIPT "!TEMPFILEPREFIX!PLAYINGMSGBOX.VBS" "!TEMPFILEPREFIX!!UNIX_PLAYING!.TMP"
+			FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX=%%A"
+			ECHO. > "!TEMPFILEPREFIX!!UNIX!.TMP"
+			SET SONG_PLAYING=1
+			REM START /MIN WSCRIPT //NOLOGO "!TEMPFILEPREFIX!PLAYINGMSGBOX.VBS" "!TEMPFILEPREFIX!!UNIX!.TMP"
+			START WSCRIPT //NOLOGO "!TEMPFILEPREFIX!INVISIBLE.VBS" "!TEMPFILEPREFIX!ENTERDETECT.BAT" "!UNIX!"
 		) ELSE SET SONG_PLAYING=0
 		GOTO DRAWLOGO
 	)
 	IF "!ERRORLEVEL!"=="32" IF !CURSOR_REC! EQU 0 ( SET CURSOR_REC=1 ) ELSE SET CURSOR_REC=0
 ) ELSE (
-	IF NOT EXIST "!TEMPFILEPREFIX!!UNIX_PLAYING!.TMP" (
+	IF NOT EXIST "!TEMPFILEPREFIX!!UNIX!.TMP" (
 		SET SONG_PLAYING=0
 		GOTO DRAWLOGO
 	)
@@ -210,18 +246,14 @@ SET /A "FRAMESHOWTEMP_CURSORINDEX=CURSOR_X - ((FRAMESHOWTEMP_CURSORCH - 7) * 10)
 GOTO DRAWTRACKER
 
 :RESET_VARIABLES
-SET "VERSIONINFO=ALPHA VERSION"
-SET "TRACKERDEFAULTCOLOUR=48;2;24;34;51m"
-SET "TRACKERHIGHLIGHTCOLOUR1=48;2;54;64;81m"
-SET "TRACKERHIGHLIGHTCOLOUR2=48;2;64;84;101m"
+SET "VERSIONINFO=DEV. VERSION"
 
 SET BPM=165
 SET HIGHLIGHT=4
 SET ROWS=64
 SET "SONGNAME=UNTITLED
-SET "SONGAUTHOR=FUCK"
+SET "SONGAUTHOR=ASDASDASDASDA"
 SET EDITSTEPS=1
-REM SET "
 
 SET CURR_TAV=0
 SET CURR_FRAME=0
@@ -273,3 +305,11 @@ set "STRLENFIT_TEMPVAR3="
 set "STRLENFIT_TEMPVAR4="
 set "STRLENFIT_TEMPVAR5="
 goto :eof
+
+:AVERAGEANSICOLOR VARINAME
+for /f "tokens=1,2,3 delims=;" %%a in ("!%~1!") do (
+		:: CACULATES AVERAGE COLOUR
+		SET /A "TEMPVARI01=(%%a + %%b + %%c) / 3"
+		SET "%~1=!TEMPVARI01!;!TEMPVARI01!;!TEMPVARI01!"
+	)
+GOTO :EOF
