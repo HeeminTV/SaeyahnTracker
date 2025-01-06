@@ -13,7 +13,7 @@ echo ........:::.......:::..:::::..::........:::....::..::::..:::......::::...::
 :: August 9, 1994
 
 set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
-set "userfileprefix=!APPDATA!\SaeyahnTracker\SaeyahnTracker-USER_"
+
 IF NOT EXIST "!APPDATA!\SaeyahnTracker\" mkdir "!APPDATA!\SaeyahnTracker\"
 
 echo ^<# : has been brought from https://stackoverflow.com/questions/41132764/detect-keystrokes-in-different-window-with-batch > "!TEMPFILEPREFIX!ENTERDETECT.BAT"
@@ -49,6 +49,15 @@ chcp 65001 >nul
 mode 120, 30 >nul
 FOR /L %%A IN (1, 1, !ROWS!) do IF %%C EQU !ROWS! ( SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" ) ELSE SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________="
 :DRAWLOGO 
+SET I=1
+:LOOP_FRAMECOUNT
+IF DEFINED FRAME!I! (
+	SET /A I+=1
+	GOTO LOOP_FRAMECOUNT
+)
+SET /A FRAMES=I-1
+REM ECHO !FRAMES!
+REM PAUSE
 IF !CURR_TAV! EQU 0 (
 	SET "DISPLAYED_CURR_TAV=TRACKER  SECTION"
 	SET "B1="
@@ -83,11 +92,10 @@ IF !CURR_TAV! EQU 0 (
 		SET B4=[25m
 	)
 )
-ECHO [0m
 CLS
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [48;2;0;0;61m┌[7m[F5][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [0m[48;2;0;0;61m┌[7m[F5][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -196,38 +204,41 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 :LOOPEXIT1
 IF !SONG_PLAYING! EQU 0 (
 	powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
-	if "!errorlevel!"=="40" set /a CURSOR_Y+=!EDITSTEPS!
-	if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
-		REM ECHO [0m
-		IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
-		IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
-		IF !ERRORLEVEL! EQU 116 SET CURR_TAV=2
-		GOTO DRAWLOGO
-	)
-	if "!errorlevel!"=="38" set /a CURSOR_Y-=!EDITSTEPS!
-	IF "!ERRORLEVEL!"=="36" set CURSOR_Y=0
-	IF "!ERRORLEVEL!"=="35" SET /A CURSOR_Y=ROWS-1
-	if "!errorlevel!"=="34" set /a CURSOR_Y+=!EDITSTEPS! * 4
-	if "!errorlevel!"=="33" set /a CURSOR_Y-=!EDITSTEPS! * 4
+	IF !CURR_TAV! EQU 0 (
+		if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
+			IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
+			IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
+			IF !ERRORLEVEL! EQU 116 SET CURR_TAV=2
+			GOTO DRAWLOGO
+		)
+		if "!errorlevel!"=="40" set /a CURSOR_Y+=!EDITSTEPS!
+		if "!errorlevel!"=="38" set /a CURSOR_Y-=!EDITSTEPS!
+		IF "!ERRORLEVEL!"=="36" set CURSOR_Y=0
+		IF "!ERRORLEVEL!"=="35" SET /A CURSOR_Y=ROWS-1
+		if "!errorlevel!"=="34" set /a CURSOR_Y+=!EDITSTEPS! * 4
+		if "!errorlevel!"=="33" set /a CURSOR_Y-=!EDITSTEPS! * 4
 
-	if "!errorlevel!"=="39" set /a CURSOR_X+=1
-	if "!errorlevel!"=="37" set /a CURSOR_X-=1
-	IF "!ERRORLEVEL!"=="9" SET /A CURSOR_X+=10
+		if "!errorlevel!"=="39" set /a CURSOR_X+=1
+		if "!errorlevel!"=="37" set /a CURSOR_X-=1
+		IF "!ERRORLEVEL!"=="9" SET /A CURSOR_X+=10
 
-	IF "!ERRORLEVEL!"=="13" ( 
-		IF !SONG_PLAYING! EQU 0 ( 
-			FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX=%%A"
-			ECHO. > "!TEMPFILEPREFIX!!UNIX!.TMP"
-			SET SONG_PLAYING=1
-			REM START /MIN WSCRIPT //NOLOGO "!TEMPFILEPREFIX!PLAYINGMSGBOX.VBS" "!TEMPFILEPREFIX!!UNIX!.TMP"
-			START WSCRIPT //NOLOGO "!TEMPFILEPREFIX!INVISIBLE.VBS" "!TEMPFILEPREFIX!ENTERDETECT.BAT" "!UNIX!"
-		) ELSE SET SONG_PLAYING=0
-		GOTO DRAWLOGO
+		IF "!ERRORLEVEL!"=="32" IF !CURSOR_REC! EQU 0 ( SET CURSOR_REC=1 ) ELSE SET CURSOR_REC=0
+		IF "!ERRORLEVEL!"=="13" ( 
+			IF !SONG_PLAYING! EQU 0 ( 
+				ECHO. > "!TEMPFILEPREFIX!!UNIX!.TMP"
+				SET SONG_PLAYING=1
+				START WSCRIPT //NOLOGO "!TEMPFILEPREFIX!INVISIBLE.VBS" ""!TEMPFILEPREFIX!ENTERDETECT.BAT" !UNIX!"
+			) ELSE SET SONG_PLAYING=0
+			GOTO DRAWLOGO
+		)
+	) ELSE IF !CURR_TAV! EQU 1 (
+		ECHO H
 	)
-	IF "!ERRORLEVEL!"=="32" IF !CURSOR_REC! EQU 0 ( SET CURSOR_REC=1 ) ELSE SET CURSOR_REC=0
 ) ELSE (
 	IF NOT EXIST "!TEMPFILEPREFIX!!UNIX!.TMP" (
 		SET SONG_PLAYING=0
+		REM SET /A CURSOR_Y-=1
+		TIMEOUT 0 >NUL
 		GOTO DRAWLOGO
 	)
 	SET /A CURSOR_Y+=1
@@ -248,6 +259,8 @@ GOTO DRAWTRACKER
 :RESET_VARIABLES
 SET "VERSIONINFO=DEV. VERSION"
 
+FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX=%%A"
+
 SET BPM=165
 SET HIGHLIGHT=4
 SET ROWS=64
@@ -257,7 +270,7 @@ SET EDITSTEPS=1
 
 SET CURR_TAV=0
 SET CURR_FRAME=0
-SET FRAMES=1
+REM SET FRAMES=1
 
 SET CURSOR_X=0
 SET CURSOR_Y=0
@@ -308,8 +321,8 @@ goto :eof
 
 :AVERAGEANSICOLOR VARINAME
 for /f "tokens=1,2,3 delims=;" %%a in ("!%~1!") do (
-		:: CACULATES AVERAGE COLOUR
-		SET /A "TEMPVARI01=(%%a + %%b + %%c) / 3"
-		SET "%~1=!TEMPVARI01!;!TEMPVARI01!;!TEMPVARI01!"
-	)
+	:: CACULATES AVERAGE COLOUR
+	SET /A "TEMPVARI01=(%%a + %%b + %%c) / 3"
+	SET "%~1=!TEMPVARI01!;!TEMPVARI01!;!TEMPVARI01!"
+)
 GOTO :EOF
