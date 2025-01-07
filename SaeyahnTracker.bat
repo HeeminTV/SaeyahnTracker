@@ -47,7 +47,8 @@ SET B1=[5m
 set B2=[25m
 chcp 65001 >nul
 mode 120, 30 >nul
-FOR /L %%A IN (1, 1, !ROWS!) do IF %%C EQU !ROWS! ( SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" ) ELSE SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________="
+:REFRESHALL
+FOR /L %%A IN (1, 1, !ROWS!) do IF %%A EQU !ROWS! ( SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" ) ELSE SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________="
 :DRAWLOGO 
 SET I=1
 :LOOP_FRAMECOUNT
@@ -129,7 +130,7 @@ echo [48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m_TRACKER SECTION ─────�
 
 ECHO │   Channel 1    │:│   Channel 2    │:│   Channel 3    │:│   Channel 4    │:│   Channel 5    │:│   Channel 6    │
 
-ECHO │  Playing !CH1_STAT_CURRNOTE!   │:│  Playing !CH2_STAT_CURRNOTE!   │:│  Playing !CH3_STAT_CURRNOTE!   │:│  Playing !CH4_STAT_CURRNOTE!   │:│  Playing !CH5_STAT_CURRNOTE!   │:│  Playing !CH6_STAT_CURRNOTE!   │
+ECHO │  Playing !CH7_STAT_CURRNOTE!   │:│  Playing !CH8_STAT_CURRNOTE!   │:│  Playing !CH9_STAT_CURRNOTE!   │:│  Playing !CH10_STAT_CURRNOTE!   │:│  Playing !CH11_STAT_CURRNOTE!   │:│  Playing !CH12_STAT_CURRNOTE!   │
 
 ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
 
@@ -154,9 +155,11 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 		set "FRAMESHOWTEMP_11=%%5"
 		set "FRAMESHOWTEMP_12=%%6"	
 		FOR /L %%C IN (7, 1, 12) do (
+			SET "CH%%C_STAT_CURRNOTE=!!FRAMESHOWTEMP_%%C:~0,3!"
 			IF !SONG_PLAYING!!CURR_TAV! EQU 00 (
 				IF %%C EQU !FRAMESHOWTEMP_CURSORCH! (
-					IF !CURSOR_Y! EQU !i! (					
+					IF !CURSOR_Y! EQU !i! (		
+						REM SET "CH%%C_STAT_CURRNOTE=!!FRAMESHOWTEMP_%%C:~0,3!"
 						IF !FRAMESHOWTEMP_CURSORINDEX! EQU 0 ( 
 							SET "FRAMESHOWTEMP_ALL=!FRAMESHOWTEMP_ALL![7m!FRAMESHOWTEMP_%%C:~0,3![27m:!FRAMESHOWTEMP_%%C:~3,2!:!FRAMESHOWTEMP_%%C:~5,1!:!FRAMESHOWTEMP_%%C:~6,3!:!FRAMESHOWTEMP_%%C:~9,3!│:│" 
 						) ELSE IF !FRAMESHOWTEMP_CURSORINDEX! EQU 1 ( 
@@ -204,13 +207,13 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 :LOOPEXIT1
 IF !SONG_PLAYING! EQU 0 (
 	powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
+	if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
+		IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
+		IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
+		IF !ERRORLEVEL! EQU 116 SET CURR_TAV=2
+		GOTO DRAWLOGO
+	)
 	IF !CURR_TAV! EQU 0 (
-		if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
-			IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
-			IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
-			IF !ERRORLEVEL! EQU 116 SET CURR_TAV=2
-			GOTO DRAWLOGO
-		)
 		if "!errorlevel!"=="40" set /a CURSOR_Y+=!EDITSTEPS!
 		if "!errorlevel!"=="38" set /a CURSOR_Y-=!EDITSTEPS!
 		IF "!ERRORLEVEL!"=="36" set CURSOR_Y=0
@@ -225,14 +228,40 @@ IF !SONG_PLAYING! EQU 0 (
 		IF "!ERRORLEVEL!"=="32" IF !CURSOR_REC! EQU 0 ( SET CURSOR_REC=1 ) ELSE SET CURSOR_REC=0
 		IF "!ERRORLEVEL!"=="13" ( 
 			IF !SONG_PLAYING! EQU 0 ( 
-				ECHO. > "!TEMPFILEPREFIX!!UNIX!.TMP"
+				BREAK > "!TEMPFILEPREFIX!!UNIX!.TMP"
 				SET SONG_PLAYING=1
 				START WSCRIPT //NOLOGO "!TEMPFILEPREFIX!INVISIBLE.VBS" ""!TEMPFILEPREFIX!ENTERDETECT.BAT" !UNIX!"
 			) ELSE SET SONG_PLAYING=0
 			GOTO DRAWLOGO
 		)
 	) ELSE IF !CURR_TAV! EQU 1 (
-		ECHO H
+		IF !ERRORLEVEL! EQU 66 CALL :SETTINGBOX "BPM" "BPM" 1 330
+		IF !ERRORLEVEL! EQU 82 (
+			CALL :SETTINGBOX "number of rows" "TEMPVARI02" 1 100
+			REM IF !TEMPVARI02! EQU !ROWS! SET "TEMPVARI02="
+			IF !TEMPVARI02! LSS !ROWS! (
+				SET /A "TEMPVARI01=(ROWS-TEMPVARI02)*78"
+				ECHO !FRAME1!
+				ECHO %TEMPVARI01%
+				SET "FRAME1=!FRAME1:~0,-%TEMPVARI01%!"
+				ECHO !FRAME1!
+				PAUSE
+				REM ECHO HI
+			) ELSE IF !TEMPVARI02! GTR !ROWS! (
+				SET /A TEMPVARI01=TEMPVARI02-ROWS
+				FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
+					REM ECHO %%C
+					IF %%A EQU !TEMPVARI02! ( 
+						SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" 
+					) ELSE IF %%A EQU 1 (
+						SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________="
+					) ELSE SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________="
+				)
+				REM SET ROWS=!TEMPVARI02!
+			)
+			SET ROWS=!TEMPVARI02!
+		)
+		goto drawlogo
 	)
 ) ELSE (
 	IF NOT EXIST "!TEMPFILEPREFIX!!UNIX!.TMP" (
@@ -280,12 +309,12 @@ SET FRAMESHOWTEMP_CURSORINDEX=0
 
 SET SONG_PLAYING=0
 
-SET CH1_STAT_CURRNOTE=___
-SET CH2_STAT_CURRNOTE=C#3
-SET CH3_STAT_CURRNOTE=F#4
-SET CH4_STAT_CURRNOTE=C#1
-SET CH5_STAT_CURRNOTE=___
-SET CH6_STAT_CURRNOTE=___
+SET CH7_STAT_CURRNOTE=___
+SET CH8_STAT_CURRNOTE=___
+SET CH9_STAT_CURRNOTE=___
+SET CH10_STAT_CURRNOTE=___
+SET CH11_STAT_CURRNOTE=___
+SET CH12_STAT_CURRNOTE=___
 GOTO :eOF
 
 :STRLENFIT
@@ -324,5 +353,30 @@ for /f "tokens=1,2,3 delims=;" %%a in ("!%~1!") do (
 	:: CACULATES AVERAGE COLOUR
 	SET /A "TEMPVARI01=(%%a + %%b + %%c) / 3"
 	SET "%~1=!TEMPVARI01!;!TEMPVARI01!;!TEMPVARI01!"
+)
+GOTO :EOF
+
+:SETTINGBOX
+echo [15;30H[44m[93m╔══════════════════════════════════════════════════════════╗
+
+echo [17;30H║  [40m                                                     [44m   ║
+call :STRLENFIT TEMPVARI01 57 "Please set %~1..."    
+echo [16;30H║ !TEMPVARI01!║
+
+IF "%~4"=="" (
+	echo [18;30H║                                                          ║
+) ELSE (
+	call :STRLENFIT TEMPVARI01 57 "Minimum: %~3, Maximum: %~4"    
+	echo [18;30H║ !TEMPVARI01!║
+)
+echo [19;30H║ Press [7m[ENTER][27m if you're done typing.                     ║
+
+echo [20;30H╚══════════════════════════════════════════════════════════╝
+SET /P %~2=[17;33H[40m
+IF "%~4" NEQ "" (
+	echo !%~2!| findstr /r "^[1-9][0-9]*$">nul
+	IF !ERRORLEVEL! NEQ 0 GOTO SETTINGBOX
+	IF !%~2! LSS %~3 GOTO SETTINGBOX
+	IF !%~2! GTR %~4 GOTO SETTINGBOX
 )
 GOTO :EOF
