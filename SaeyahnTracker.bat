@@ -1,5 +1,8 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
+SET "VERSIONINFO=DEV. VERSION"
+TITLE SaeyahnTracker Version !VERSIONINFO!	
+REM SETLOCAL ENABLEDELAYEDEXPANSION asmogus
 
 echo '##::::::::'#######:::::'###::::'########::'####:'##::: ##::'######::::::::::::::::::
 echo  ##:::::::'##.... ##:::'## ##::: ##.... ##:. ##:: ###:: ##:'##... ##:::::::::::::::::
@@ -32,7 +35,7 @@ echo function keyPressed($key^) { return [user32_dll]::GetAsyncKeyState([Windows
 echo while ($true^) { >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo     $enterkey = keyPressed "Enter" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo     if ($enterkey^) { break } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
-echo     start-sleep -milliseconds 40 >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+echo     start-sleep -milliseconds 30 >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo $Host.UI.RawUI.FlushInputBuffer^(^) >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 
@@ -41,7 +44,6 @@ echo WScript.Echo(new Date().getTime()); > "!TEMPFILEPREFIX!UNIXTIME.JS"
 echo CreateObject("Wscript.Shell").Run "" ^& WScript.Arguments(0) ^& "", 0, False > "!TEMPFILEPREFIX!INVISIBLE.VBS"
 
 call :RESET_VARIABLES
-TITLE SaeyahnTracker Version !VERSIONINFO!	
 
 SET B1=[5m
 set B2=[25m
@@ -96,7 +98,7 @@ IF !CURR_TAV! EQU 0 (
 CLS
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [0m[48;2;0;0;61m┌[7m[F5][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [0m[48;2;0;0;61m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -120,17 +122,19 @@ echo │  	Tracker Version !VERSIONINFO!
 
 IF !SONG_PLAYING! EQU 0 (
 
-	ECHO └──  YOU ARE IN [5m[3m!DISPLAYED_CURR_TAV![23m[25m  ────────────────────────────────────────────────────────────────────────────────────┘
-	
-) ELSE ECHO └──  [5m[3mPLAYING...[23m[25m  ─────────────────────────────────────────────────────────────────────────────────────────────────────┘
+	ECHO └──  YOU ARE IN [5m[3m!DISPLAYED_CURR_TAV![23m[25m  ───────────────────────────────────────────────────────────────────────────────────┘
+			
+) ELSE ECHO └──  [5m[3mPLAYING...[23m[25m  ────────────────────────────────────────────────────────────────────────────────────────────────────┘
 REM PAUSE
 :DRAWTRACKER
 echo [12;0H
-echo [48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m_TRACKER SECTION ──────────────────────────────────────────────────────────────────────────────────────────┐
+echo [48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ─────────────────────────────────────────────────────────────────────────────────────────┐
 
-ECHO │   Channel 1    │:│   Channel 2    │:│   Channel 3    │:│   Channel 4    │:│   Channel 5    │:│   Channel 6    │
+REM ECHO ├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 
-ECHO │  Playing !CH7_STAT_CURRNOTE!   │:│  Playing !CH8_STAT_CURRNOTE!   │:│  Playing !CH9_STAT_CURRNOTE!   │:│  Playing !CH10_STAT_CURRNOTE!   │:│  Playing !CH11_STAT_CURRNOTE!   │:│  Playing !CH12_STAT_CURRNOTE!   │
+echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬────────────────┬─┬────────────────┤
+
+ECHO │ Channel 1  !CH7_STAT_CURRNOTE! │:│ Channel 2  !CH8_STAT_CURRNOTE! │:│ Channel 3  !CH9_STAT_CURRNOTE! │:│ Channel 4  !CH10_STAT_CURRNOTE! │:│ Channel 5  !CH11_STAT_CURRNOTE! │:│ Channel 6  !CH12_STAT_CURRNOTE! │
 
 ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
 
@@ -210,7 +214,7 @@ IF !SONG_PLAYING! EQU 0 (
 	if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
 		IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
 		IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
-		IF !ERRORLEVEL! EQU 116 SET CURR_TAV=2
+		IF !ERRORLEVEL! EQU 118 SET CURR_TAV=2
 		GOTO DRAWLOGO
 	)
 	IF !CURR_TAV! EQU 0 (
@@ -237,8 +241,8 @@ IF !SONG_PLAYING! EQU 0 (
 	) ELSE IF !CURR_TAV! EQU 1 (
 		IF !ERRORLEVEL! EQU 66 CALL :SETTINGBOX "BPM" "BPM" 1 330
 		IF !ERRORLEVEL! EQU 82 (
+			SET TEMPVARI02=!ROWS!
 			CALL :SETTINGBOX "number of rows" "TEMPVARI02" 1 100
-			REM IF !TEMPVARI02! EQU !ROWS! SET "TEMPVARI02="
 			IF !TEMPVARI02! LSS !ROWS! (
 				SET /A "TEMPVARI01=(ROWS-TEMPVARI02)*78"
 				ECHO !FRAME1!
@@ -246,7 +250,6 @@ IF !SONG_PLAYING! EQU 0 (
 				SET "FRAME1=!FRAME1:~0,-%TEMPVARI01%!"
 				ECHO !FRAME1!
 				PAUSE
-				REM ECHO HI
 			) ELSE IF !TEMPVARI02! GTR !ROWS! (
 				SET /A TEMPVARI01=TEMPVARI02-ROWS
 				FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
@@ -257,7 +260,6 @@ IF !SONG_PLAYING! EQU 0 (
 						SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________="
 					) ELSE SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________="
 				)
-				REM SET ROWS=!TEMPVARI02!
 			)
 			SET ROWS=!TEMPVARI02!
 		)
@@ -286,15 +288,13 @@ SET /A "FRAMESHOWTEMP_CURSORINDEX=CURSOR_X - ((FRAMESHOWTEMP_CURSORCH - 7) * 10)
 GOTO DRAWTRACKER
 
 :RESET_VARIABLES
-SET "VERSIONINFO=DEV. VERSION"
-
 FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX=%%A"
 
 SET BPM=165
 SET HIGHLIGHT=4
 SET ROWS=64
 SET "SONGNAME=UNTITLED
-SET "SONGAUTHOR=ASDASDASDASDA"
+SET "SONGAUTHOR=FUCK"
 SET EDITSTEPS=1
 
 SET CURR_TAV=0
