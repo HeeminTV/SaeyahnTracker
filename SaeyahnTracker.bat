@@ -2,7 +2,6 @@
 SETLOCAL ENABLEDELAYEDEXPANSION
 SET "VERSIONINFO=DEV. VERSION"
 TITLE SaeyahnTracker !VERSIONINFO!	
-REM SETLOCAL ENABLEDELAYEDEXPANSION asmogus
 
 echo '##::::::::'#######:::::'###::::'########::'####:'##::: ##::'######::::::::::::::::::
 echo  ##:::::::'##.... ##:::'## ##::: ##.... ##:. ##:: ###:: ##:'##... ##:::::::::::::::::
@@ -14,6 +13,8 @@ echo  ########:. #######:: ##:::: ##: ########::'####: ##::. ##:. ######::: ###:
 echo ........:::.......:::..:::::..::........:::....::..::::..:::......::::...::...::...::
 :: banner3-D by Merlin Greywolf merlin@brahms.udel.edu
 :: August 9, 1994
+
+:: https://github.com/user-attachments/assets/4fe5ee8a-86d9-4c29-b9de-57796af313d1
 
 set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
 
@@ -208,7 +209,6 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 ) 
 :LOOPEXIT1
 IF !SONG_PLAYING! EQU 0 (
-	:: IF SONG IS NOT PLAYING
 	powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
 	if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
 		IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
@@ -246,7 +246,6 @@ IF !SONG_PLAYING! EQU 0 (
 			SET TEMPVARI02=!ROWS!
 			CALL :SETTINGBOX "number of rows" "TEMPVARI02" 1 100
 			IF !TEMPVARI02! LSS !ROWS! (
-				REM pause
 				set "TEMPVARI03=!FRAME1!"
 				SET /A TEMPVARI01=ROWS-TEMPVARI02
 				set I=0
@@ -269,7 +268,6 @@ IF !SONG_PLAYING! EQU 0 (
 				SET "FRAME1=!TEMPVARI04!"
 			) 
 			IF !TEMPVARI02! GTR !ROWS! (
-				REM pause
 				SET /A TEMPVARI01=TEMPVARI02-ROWS
 				IF !TEMPVARI01! EQU 1 (
 					SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________"
@@ -292,7 +290,6 @@ IF !SONG_PLAYING! EQU 0 (
 		goto drawlogo
 	)
 	IF !ERRORLEVEL! EQU 220 (
-		REM SET FRAMES=40
 		SET TEMPVARI02=1
 		GOTO EDIT_FRAMES
 	)
@@ -300,7 +297,6 @@ IF !SONG_PLAYING! EQU 0 (
 	:: IF THE SONG IS PLAYING
 	IF NOT EXIST "!TEMPFILEPREFIX!!UNIX!.TMP" (
 		SET SONG_PLAYING=0
-		REM SET /A CURSOR_Y-=1
 		TIMEOUT 0 >NUL
 		GOTO DRAWLOGO
 	)
@@ -503,13 +499,9 @@ GOTO EDIT_FRAMES
 FOR /L %%A IN (1, 1, !ROWS!) do IF %%A EQU !ROWS! ( SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________" ) ELSE SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________="
 GOTO :EOF
 
-REM :ERRMSG
-REM GOTO :EOF
-
 :MSGBOX
 echo(WScript.Quit msgBox("%~1",%~2,"SaeyahnTracker") >"!TEMPFILEPREFIX!MSGBOX.VBS"
 cscript //nologo //e:vbscript "!TEMPFILEPREFIX!MSGBOX.VBS"
 set "TEMPVARI99=!errorlevel!" 
 del "!TEMPFILEPREFIX!MSGBOX.VBS" 2>nul
-REM exit /b !TEMPVARI99!
 GOTO :EOF
