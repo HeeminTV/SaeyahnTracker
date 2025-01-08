@@ -98,7 +98,7 @@ IF !CURR_TAV! EQU 0 (
 CLS
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [0m[48;2;0;32;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [0m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -294,7 +294,70 @@ IF !SONG_PLAYING! EQU 0 (
 		goto drawlogo
 	)
 	IF !ERRORLEVEL! EQU 220 (
+		REM SET I=1
+		
+		REM IF DEFINED FRAME!I! (
+			REM SET /A I+=1
+		REM )
+		SET FRAMES=40
+		SET TEMPVARI02=0
+		:FRAMESEDIT
 		CALL :PROMPTBOX "48;2;64;0;0"
+		IF !FRAMES! EQU 1 (
+			ECHO [16;32HFrame: 1
+		) else ECHO [16;32HFrames: !FRAMES!
+		
+		ECHO [15;80H╦
+		
+		ECHO [16;80H║[7m[←→↑↓][27m
+		
+		ECHO [17;80H║└─Mv.Csr
+		
+		ECHO [18;80H║[7m[ENTER][27m
+		
+		ECHO [19;80H║└─Done
+		
+		ECHO [20;80H╩
+		
+		ECHO [15;33H[7m[A][27m_ADD FRAME══[7m[R][27m_REMOVE CHOSEN FRAME══[7m[M][27m_MOVE FRAME
+		
+		ECHO [20;33H[7m[C][27m_COPY FRAME
+		
+		REM ECHO [17;32H00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+		
+		REM ECHO [18;32H16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+		SET I=32
+		REM SET "TEMPVARI01="
+		REM SET TEMPVARI02=0
+		FOR /L %%A IN (0,1,!FRAMES!) DO (
+			IF %%A EQU !TEMPVARI02! (
+				SET "TEMPVARI01=[7m"
+			) ELSE SET "TEMPVARI01="
+			IF %%A LSS 16 (
+				IF %%A LSS 10 (
+					ECHO [17;!I!H !TEMPVARI01!0%%A[27m
+				) ELSE ECHO [17;!I!H !TEMPVARI01!%%A[27m
+				REM SET /A I+=3
+			) ELSE IF %%A LSS 32 (
+				IF %%A EQU 16 SET I=32
+				ECHO [18;!I!H !TEMPVARI01!%%A[27m
+			) ELSE (
+				IF %%A EQU 32 SET I=32
+				ECHO [19;!I!H !TEMPVARI01!%%A[27m
+			)
+			SET /A I+=3
+		)
+		REM PAUSE
+		REM GOTO FRAMESEDIT
+		powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
+		IF !ERRORLEVEL! EQU 39 SET /A TEMPVARI02+=1
+		IF !ERRORLEVEL! EQU 37 SET /A TEMPVARI02-=1
+		IF !ERRORLEVEL! EQU 40 SET /A TEMPVARI02+=16
+		IF !ERRORLEVEL! EQU 38 SET /A TEMPVARI02-=16
+		IF !TEMPVARI02! LSS 0 SET /A TEMPVARI02=0
+		IF !TEMPVARI02! GTR !FRAMES! SET /A TEMPVARI02=!FRAMES!
+		IF !ERRORLEVEL! EQU 13 GOTO DRAWLOGO
+		GOTO FRAMESEDIT
 		REM PAUSE
 	)
 ) ELSE (
