@@ -215,6 +215,11 @@ IF !SONG_PLAYING! EQU 0 (
 		IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
 		IF !ERRORLEVEL! EQU 114 SET CURR_TAV=1
 		IF !ERRORLEVEL! EQU 118 SET CURR_TAV=2
+		IF !ERRORLEVEL! EQU 116 (
+			SET CURR_TAV=0
+			CALL :PLAYSONG
+			SET CURSOR_Y=0
+		)
 		GOTO DRAWLOGO
 	)
 	IF !CURR_TAV! EQU 0 (
@@ -232,9 +237,7 @@ IF !SONG_PLAYING! EQU 0 (
 		IF "!ERRORLEVEL!"=="32" IF !CURSOR_REC! EQU 0 ( SET CURSOR_REC=1 ) ELSE SET CURSOR_REC=0
 		IF "!ERRORLEVEL!"=="13" ( 
 			IF !SONG_PLAYING! EQU 0 ( 
-				BREAK > "!TEMPFILEPREFIX!!UNIX!.TMP"
-				SET SONG_PLAYING=1
-				START WSCRIPT //NOLOGO "!TEMPFILEPREFIX!INVISIBLE.VBS" ""!TEMPFILEPREFIX!ENTERDETECT.BAT" !UNIX!"
+				CALL :PLAYSONG
 			) ELSE SET SONG_PLAYING=0
 			GOTO DRAWLOGO
 		)
@@ -381,21 +384,13 @@ for /f "tokens=1,2,3 delims=;" %%a in ("!%~1!") do (
 GOTO :EOF
 
 :SETTINGBOX
-echo [15;30H[44m[93m╔══════════════════════════════════════════════════════════╗
+CALL :PROMPTBOX
+echo [17;30H   [40m                                                     [44m
+echo [16;30H  Please set %~1...
 
-echo [17;30H║  [40m                                                     [44m   ║
-call :STRLENFIT TEMPVARI01 57 "Please set %~1..."    
-echo [16;30H║ !TEMPVARI01!║
+IF "%~4" NEQ "" echo [18;30H Minimum: %~3, Maximum: %~4
+echo [19;30H  Press [7m[ENTER][27m if you're done typing.
 
-IF "%~4"=="" (
-	echo [18;30H║                                                          ║
-) ELSE (
-	call :STRLENFIT TEMPVARI01 57 "Minimum: %~3, Maximum: %~4"    
-	echo [18;30H║ !TEMPVARI01!║
-)
-echo [19;30H║ Press [7m[ENTER][27m if you're done typing.                     ║
-
-echo [20;30H╚══════════════════════════════════════════════════════════╝
 SET /P %~2=[17;33H[40m
 IF "%~4" NEQ "" (
 	echo !%~2!| findstr /r "^[1-9][0-9]*$">nul
@@ -403,4 +398,24 @@ IF "%~4" NEQ "" (
 	IF !%~2! LSS %~3 GOTO SETTINGBOX
 	IF !%~2! GTR %~4 GOTO SETTINGBOX
 )
+GOTO :EOF
+
+:PROMPTBOX
+echo [15;30H[44m[93m╔══════════════════════════════════════════════════════════╗
+
+echo [16;30H║                                                          ║
+
+echo [17;30H║                                                          ║
+
+echo [18;30H║                                                          ║
+
+echo [19;30H║                                                          ║
+
+echo [20;30H╚══════════════════════════════════════════════════════════╝
+GOTO :EOF
+
+:PLAYSONG
+BREAK > "!TEMPFILEPREFIX!!UNIX!.TMP"
+SET SONG_PLAYING=1
+START WSCRIPT //NOLOGO "!TEMPFILEPREFIX!INVISIBLE.VBS" ""!TEMPFILEPREFIX!ENTERDETECT.BAT" !UNIX!"
 GOTO :EOF
