@@ -281,6 +281,7 @@ IF !SONG_PLAYING! EQU 0 (
 				)
 			)
 			SET ROWS=!TEMPVARI02!
+			IF !CURSOR_Y! GTR !ROWS! SET /A CURSOR_Y=ROWS-1
 		)
 		goto drawlogo
 	)
