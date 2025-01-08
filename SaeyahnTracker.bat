@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 SET "VERSIONINFO=DEV. VERSION"
-TITLE SaeyahnTracker Version !VERSIONINFO!	
+TITLE SaeyahnTracker !VERSIONINFO!	
 REM SETLOCAL ENABLEDELAYEDEXPANSION asmogus
 
 echo '##::::::::'#######:::::'###::::'########::'####:'##::: ##::'######::::::::::::::::::
@@ -244,17 +244,36 @@ IF !SONG_PLAYING! EQU 0 (
 			SET TEMPVARI02=!ROWS!
 			CALL :SETTINGBOX "number of rows" "TEMPVARI02" 1 100
 			IF !TEMPVARI02! LSS !ROWS! (
-				SET /A "TEMPVARI01=(ROWS-TEMPVARI02)*78"
-				ECHO !FRAME1!
-				ECHO %TEMPVARI01%
-				SET "FRAME1=!FRAME1:~0,-%TEMPVARI01%!"
-				ECHO !FRAME1!
-				PAUSE
-			) ELSE IF !TEMPVARI02! GTR !ROWS! (
+				REM pause
+				set "TEMPVARI03=!FRAME1!"
+				SET /A TEMPVARI01=ROWS-TEMPVARI02
+				set I=0
+				:LOOP_ROWSCOUNT1
+				if "!TEMPVARI03!"=="" goto LOOPEXIT3
+				for /f "tokens=1* delims==" %%a in ("!TEMPVARI03!") do (
+					set /a I+=1
+					set "TEMPVARI03=%%b"
+				)
+				goto LOOP_ROWSCOUNT1
+
+				:LOOPEXIT3
+				set /a TEMPVARI05=I-TEMPVARI01
+				set "TEMPVARI03=!FRAME1!"
+				set "TEMPVARI04="
+				for /l %%i in (1,1,!TEMPVARI05!) do for /f "tokens=1* delims==" %%a in ("!TEMPVARI03!") do (
+						if "%%i"=="1" ( set "TEMPVARI04=%%a" ) else set "TEMPVARI04=!TEMPVARI04!=%%a"
+						set "TEMPVARI03=%%b"
+				)
+				SET "FRAME1=!TEMPVARI04!"
+			) 
+			IF !TEMPVARI02! GTR !ROWS! (
+				REM pause
 				SET /A TEMPVARI01=TEMPVARI02-ROWS
-				FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
+				IF !TEMPVARI01! EQU 1 (
+					SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________"
+				) ELSE FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
 					REM ECHO %%C
-					IF %%A EQU !TEMPVARI02! ( 
+					IF %%A EQU !TEMPVARI01! ( 
 						SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" 
 					) ELSE IF %%A EQU 1 (
 						SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________="
