@@ -98,7 +98,7 @@ IF !CURR_TAV! EQU 0 (
 CLS
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [0m[48;2;0;0;61m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [0m[48;2;0;32;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -210,6 +210,7 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 ) 
 :LOOPEXIT1
 IF !SONG_PLAYING! EQU 0 (
+	:: IF SONG IS NOT PLAYING
 	powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
 	if !errorlevel! GEQ 112 if !errorlevel! LEQ 121 (
 		IF !ERRORLEVEL! EQU 112 SET CURR_TAV=0
@@ -292,7 +293,12 @@ IF !SONG_PLAYING! EQU 0 (
 		IF !ERRORLEVEL! EQU 65 CALL :SETTINGBOX "author of this project" "SONGAUTHOR"
 		goto drawlogo
 	)
+	IF !ERRORLEVEL! EQU 220 (
+		CALL :PROMPTBOX "48;2;64;0;0"
+		REM PAUSE
+	)
 ) ELSE (
+	:: IF THE SONG IS PLAYING
 	IF NOT EXIST "!TEMPFILEPREFIX!!UNIX!.TMP" (
 		SET SONG_PLAYING=0
 		REM SET /A CURSOR_Y-=1
@@ -384,12 +390,12 @@ for /f "tokens=1,2,3 delims=;" %%a in ("!%~1!") do (
 GOTO :EOF
 
 :SETTINGBOX
-CALL :PROMPTBOX
-echo [17;30H   [40m                                                     [44m
-echo [16;30H  Please set %~1...
+CALL :PROMPTBOX 44
+echo [17;33H[40m                                                      [44m
+echo [16;32HPlease set %~1...
 
-IF "%~4" NEQ "" echo [18;30H Minimum: %~3, Maximum: %~4
-echo [19;30H  Press [7m[ENTER][27m if you're done typing.
+IF "%~4" NEQ "" echo [18;32HMinimum: %~3, Maximum: %~4
+echo [19;32HPress [7m[ENTER][27m if you're done typing.
 
 SET /P %~2=[17;33H[40m
 IF "%~4" NEQ "" (
@@ -401,7 +407,7 @@ IF "%~4" NEQ "" (
 GOTO :EOF
 
 :PROMPTBOX
-echo [15;30H[44m[93m╔══════════════════════════════════════════════════════════╗
+echo [15;30H[%~1m[93m╠══════════════╩═══════════════════════════════════════════╗
 
 echo [16;30H║                                                          ║
 
@@ -412,6 +418,10 @@ echo [18;30H║                                                          ║
 echo [19;30H║                                                          ║
 
 echo [20;30H╚══════════════════════════════════════════════════════════╝
+
+ECHO [14;30H║SaeyahnTracker║
+
+echo [13;30H╔══════════════╗
 GOTO :EOF
 
 :PLAYSONG
