@@ -111,9 +111,10 @@ IF !CURR_TAV! EQU 0 (
 	)
 )
 CLS
+echo [30;0H[90mTracker ID: !UNIX![0;0H[0m
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [0m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -231,6 +232,7 @@ IF !SONG_PLAYING! EQU 0 (
 			SET CURR_TAV=0
 			CALL :PLAYSONG
 			SET CURSOR_Y=0
+			SET CURR_FRAME=1
 		)
 		GOTO DRAWLOGO
 	)
