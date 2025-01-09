@@ -46,6 +46,8 @@ echo WScript.Echo(new Date().getTime()); > "!TEMPFILEPREFIX!UNIXTIME.JS"
 
 echo CreateObject("Wscript.Shell").Run "" ^& WScript.Arguments(0) ^& "", 0, False > "!TEMPFILEPREFIX!INVISIBLE.VBS"
 
+echo WScript.Sleep WScript.Arguments(0) > "!TEMPFILEPREFIX!SLEEP.VBS"
+
 set fmpeg=0
 set fplay=0
 set fprobe=0
@@ -110,11 +112,15 @@ IF !CURR_TAV! EQU 0 (
 		SET B4=[25m
 	)
 )
+SET /A DELAY=15000/BPM-100
+REM ECHO !DELAY!
+REM PAUSE
+REM IF !DELAY! LSS 0 SET DELAY=0
 CLS
-echo [30;0H[90mTracker ID: !UNIX![0;0H[0m
+echo [30;0H[90mTracker ID: !UNIX![0m
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [0;0H[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -144,7 +150,7 @@ IF !SONG_PLAYING! EQU 0 (
 
 :DRAWFRAME
 IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!CURR_FRAME!"
-IF !FRAMES! LSS 10 ( SET TEMPVARI02=0!FRAMES! ) ELSE SET TEMPVARI02=!FRAMES!
+IF !FRAMES! LSS 10 ( SET "TEMPVARI02=0!FRAMES!" ) ELSE SET TEMPVARI02=!FRAMES!
 ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H     
 :DRAWTRACKER
 echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ────────────────────────────────────────────────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m%TEMPVARI01%[48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─┐
@@ -155,7 +161,7 @@ echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES───────
 
 ECHO │ Channel 1  %CH7_STAT_CURRNOTE% │:│ Channel 2  %CH8_STAT_CURRNOTE% │:│ Channel 3  %CH9_STAT_CURRNOTE% │:│ Channel 4  %CH10_STAT_CURRNOTE% │:│ Channel 5  %CH11_STAT_CURRNOTE% │:│ Channel 6  %CH12_STAT_CURRNOTE% │
 
-ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
+ECHO │!DELAY!-------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
 
 IF !ROWS! LEQ 12 (
 	SET SCROLL_MIN=0
@@ -167,7 +173,7 @@ IF !ROWS! LEQ 12 (
 )
 SET /A SCROLL_MAX=SCROLL_MIN+12
 set I=0
-for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
+for /f "tokens=* delims==" %%a in ("!FRAME%CURR_FRAME%!") do for %%b in (%%a) do (
 	SET "FRAMESHOWTEMP_ALL="
 	IF !I! LSS !SCROLL_MIN! SET /A I+=1
 	IF !I! GEQ !SCROLL_MIN! for /f "tokens=1,2,3,4,5,6 delims=:" %%1 in ("%%b") do (
@@ -258,8 +264,9 @@ IF !SONG_PLAYING! EQU 0 (
 		
 		if "!errorlevel!"=="189" if !OCTAVE! GTR 1 SET /A OCTAVE-=1
 		if "!errorlevel!"=="187" if !OCTAVE! LSS 7 SET /A OCTAVE+=1
+		
 	) ELSE IF !CURR_TAV! EQU 1 (
-		IF !ERRORLEVEL! EQU 66 CALL :SETTINGBOX "BPM" "BPM" 1 330
+		IF !ERRORLEVEL! EQU 66 CALL :SETTINGBOX "BPM" "BPM" 60 165
 		IF !ERRORLEVEL! EQU 82 (
 			SET TEMPVARI02=!ROWS!
 			CALL :SETTINGBOX "number of rows" "TEMPVARI02" 1 100
@@ -319,17 +326,33 @@ IF !SONG_PLAYING! EQU 0 (
 		GOTO DRAWLOGO
 	)
 	SET /A CURSOR_Y+=1
+	IF !DELAY! GEQ 100 WSCRIPT "!TEMPFILEPREFIX!SLEEP.VBS" %DELAY% | MORE >NUL
 )
-
-IF !CURSOR_Y! LSS 0 SET /A CURSOR_Y+=ROWS
-IF !CURSOR_Y! GEQ !ROWS! SET /A CURSOR_Y-=ROWS
-
-
 
 IF !CURSOR_X! LSS 0 SET CURSOR_X=59
 IF !CURSOR_X! GTR 59 SET /A CURSOR_X-=60
 SET /A "FRAMESHOWTEMP_CURSORCH=(CURSOR_X - 0) / 10 + 7"
 SET /A "FRAMESHOWTEMP_CURSORINDEX=CURSOR_X - ((FRAMESHOWTEMP_CURSORCH - 7) * 10)"
+
+IF !CURSOR_Y! LSS 0 (
+	SET /A CURSOR_Y+=ROWS
+	IF !FRAMES! NEQ 1 (
+		IF !CURR_FRAME! EQU 1 (
+			SET CURR_FRAME=!FRAMES!
+		) ELSE SET /A CURR_FRAME-=1
+		GOTO DRAWFRAME
+	)
+)
+
+IF !CURSOR_Y! GEQ !ROWS! (
+	SET /A CURSOR_Y-=ROWS
+	IF !FRAMES! NEQ 1 (
+		IF !CURR_FRAME! EQU !FRAMES! (
+			SET CURR_FRAME=1
+		) ELSE SET /A CURR_FRAME+=1
+		GOTO DRAWFRAME
+	)
+)
 
 GOTO DRAWTRACKER
 
