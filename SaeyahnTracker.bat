@@ -2,6 +2,8 @@
 SETLOCAL ENABLEDELAYEDEXPANSION
 SET "VERSIONINFO=DEV. VERSION"
 TITLE SaeyahnTracker !VERSIONINFO!	
+chcp 65001 >nul
+mode 120, 30 >nul
 
 echo '##::::::::'#######:::::'###::::'########::'####:'##::: ##::'######::::::::::::::::::
 echo  ##:::::::'##.... ##:::'## ##::: ##.... ##:. ##:: ###:: ##:'##... ##:::::::::::::::::
@@ -44,12 +46,26 @@ echo WScript.Echo(new Date().getTime()); > "!TEMPFILEPREFIX!UNIXTIME.JS"
 
 echo CreateObject("Wscript.Shell").Run "" ^& WScript.Arguments(0) ^& "", 0, False > "!TEMPFILEPREFIX!INVISIBLE.VBS"
 
+set fmpeg=0
+set fplay=0
+set fprobe=0
+
+IF EXIST "ffmpeg.exe" ( set "fmpeg=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffmpeg.exe" set "fmpeg=1"
+IF EXIST "ffplay.exe" ( set "fplay=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffplay.exe" set "fplay=1"
+IF EXIST "ffprobe.exe" ( set "fprobe=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffprobe.exe" set "fprobe=1"
+
+if "!fmpeg!!fplay!!fprobe!" NEQ "111" (
+	call :ERRORBOX
+	echo [17;33HSaeyahnTracker could not find the FFmpeg set in this computer.[18;33HPlease make sure "ffmpeg.exe", "ffplay.exe" and "ffprobe.exe"[19;33Hin the system path or the same directory as this script.
+	pause >nul
+	exit /b 55
+)
+
 call :RESET_VARIABLES
 
 SET B1=[5m
 set B2=[25m
-chcp 65001 >nul
-mode 120, 30 >nul
+
 :REFRESHALL
 CALL :GENERATEFRAME 1
 :DRAWLOGO 
@@ -130,13 +146,13 @@ IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!
 IF !FRAMES! LSS 10 ( SET TEMPVARI02=0!FRAMES! ) ELSE SET TEMPVARI02=!FRAMES!
 ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H     
 :DRAWTRACKER
-echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ────────────────────────────────────────────────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m!TEMPVARI01![48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─┐
+echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ────────────────────────────────────────────────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m%TEMPVARI01%[48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─┐
 
 REM ECHO ├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 
-echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m_OCTAVE─DOWN─[48;2;0;0;0m!OCTAVE![48;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
+echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m_OCTAVE─DOWN─[48;2;0;0;0m%OCTAVE%[48;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
 
-ECHO │ Channel 1  !CH7_STAT_CURRNOTE! │:│ Channel 2  !CH8_STAT_CURRNOTE! │:│ Channel 3  !CH9_STAT_CURRNOTE! │:│ Channel 4  !CH10_STAT_CURRNOTE! │:│ Channel 5  !CH11_STAT_CURRNOTE! │:│ Channel 6  !CH12_STAT_CURRNOTE! │
+ECHO │ Channel 1  %CH7_STAT_CURRNOTE% │:│ Channel 2  %CH8_STAT_CURRNOTE% │:│ Channel 3  %CH9_STAT_CURRNOTE% │:│ Channel 4  %CH10_STAT_CURRNOTE% │:│ Channel 5  %CH11_STAT_CURRNOTE% │:│ Channel 6  %CH12_STAT_CURRNOTE% │
 
 ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
 
@@ -202,7 +218,7 @@ for /f "tokens=* delims==" %%a in ("!FRAME1!") do for %%b in (%%a) do (
 		)
 		IF !I! GEQ !SCROLL_MAX! GOTO LOOPEXIT1 
 	)
-	set /a i+=1
+	set /a I+=1
 ) 
 :LOOPEXIT1
 IF !SONG_PLAYING! EQU 0 (
@@ -272,7 +288,6 @@ IF !SONG_PLAYING! EQU 0 (
 				IF !TEMPVARI01! EQU 1 (
 					SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________"
 				) ELSE FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
-					REM ECHO %%C
 					IF %%A EQU !TEMPVARI01! ( 
 						SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" 
 					) ELSE IF %%A EQU 1 (
@@ -400,6 +415,11 @@ IF "%~4" NEQ "" (
 	IF !%~2! LSS %~3 GOTO SETTINGBOX
 	IF !%~2! GTR %~4 GOTO SETTINGBOX
 )
+GOTO :EOF
+
+:ERRORBOX
+CALL :promptbox 41
+echo [16;33H/^^!\ [5mError[25m
 GOTO :EOF
 
 :PLAYSONG
