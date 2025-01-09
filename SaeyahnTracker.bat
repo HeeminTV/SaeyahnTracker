@@ -274,37 +274,19 @@ IF !SONG_PLAYING! EQU 0 (
 			SET TEMPVARI02=!ROWS!
 			CALL :SETTINGBOX "number of rows" "TEMPVARI02" 1 100
 			IF !TEMPVARI02! LSS !ROWS! (
-				set "TEMPVARI03=!FRAME1!"
-				SET /A TEMPVARI01=ROWS-TEMPVARI02
-				set I=0
-				:LOOP_ROWSCOUNT1
-				if "!TEMPVARI03!"=="" goto LOOPEXIT3
-				for /f "tokens=1* delims==" %%a in ("!TEMPVARI03!") do (
-					set /a I+=1
-					set "TEMPVARI03=%%b"
-				)
-				goto LOOP_ROWSCOUNT1
-
-				:LOOPEXIT3
-				set /a TEMPVARI05=I-TEMPVARI01
-				set "TEMPVARI03=!FRAME1!"
-				set "TEMPVARI04="
-				for /l %%i in (1,1,!TEMPVARI05!) do for /f "tokens=1* delims==" %%a in ("!TEMPVARI03!") do (
-						if "%%i"=="1" ( set "TEMPVARI04=%%a" ) else set "TEMPVARI04=!TEMPVARI04!=%%a"
-						set "TEMPVARI03=%%b"
-				)
-				SET "FRAME1=!TEMPVARI04!"
-			) 
-			IF !TEMPVARI02! GTR !ROWS! (
-				SET /A TEMPVARI01=TEMPVARI02-ROWS
-				IF !TEMPVARI01! EQU 1 (
-					SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________"
-				) ELSE FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
-					IF %%A EQU !TEMPVARI01! ( 
-						SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________" 
-					) ELSE IF %%A EQU 1 (
-						SET "FRAME1=!FRAME1!=____________:____________:____________:____________:____________:____________="
-					) ELSE SET "FRAME1=!FRAME1!____________:____________:____________:____________:____________:____________="
+				FOR /L %%A IN (1,1,!FRAMES!) DO call :ROWSEDIT_DECREASE %%A
+			) ELSE IF !TEMPVARI02! GTR !ROWS! (
+				FOR /L %%A IN (1,1,!FRAMES!) DO (
+					SET /A TEMPVARI01=TEMPVARI02-ROWS
+					IF !TEMPVARI01! EQU 1 (
+						SET "FRAME%~1=!FRAME%~1!=____________:____________:____________:____________:____________:____________"
+					) ELSE FOR /L %%A IN (1, 1, !TEMPVARI01!) do (
+						IF %%A EQU !TEMPVARI01! ( 
+							SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________" 
+						) ELSE IF %%A EQU 1 (
+							SET "FRAME%~1=!FRAME%~1!=____________:____________:____________:____________:____________:____________="
+						) ELSE SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________="
+					)
 				)
 			)
 			SET ROWS=!TEMPVARI02!
@@ -570,4 +552,27 @@ echo [20;30H╚═════════════════════�
 ECHO [14;30H║SaeyahnTracker║
 
 echo [13;30H╔══════════════╗
+GOTO :EOF
+
+:ROWSEDIT_DECREASE
+set "TEMPVARI03=!FRAME%~1!"
+SET /A TEMPVARI01=ROWS-TEMPVARI02
+set I=0
+:LOOP_ROWSCOUNT1
+if "!TEMPVARI03!"=="" goto LOOPEXIT3
+for /f "tokens=1* delims==" %%a in ("!TEMPVARI03!") do (
+	set /a I+=1
+	set "TEMPVARI03=%%b"
+)
+goto LOOP_ROWSCOUNT1
+
+:LOOPEXIT3
+set /a TEMPVARI05=I-TEMPVARI01
+set "TEMPVARI03=!FRAME%~1!"
+set "TEMPVARI04="
+for /l %%i in (1,1,!TEMPVARI05!) do for /f "tokens=1* delims==" %%a in ("!TEMPVARI03!") do (
+		if "%%i"=="1" ( set "TEMPVARI04=%%a" ) else set "TEMPVARI04=!TEMPVARI04!=%%a"
+		set "TEMPVARI03=%%b"
+)
+SET "FRAME%~1=!TEMPVARI04!"
 GOTO :EOF
