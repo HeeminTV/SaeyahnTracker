@@ -130,11 +130,11 @@ IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!
 IF !FRAMES! LSS 10 ( SET TEMPVARI02=0!FRAMES! ) ELSE SET TEMPVARI02=!FRAMES!
 ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H     
 :DRAWTRACKER
-echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ─────────────────────────────────────────────────────────────────────────────────────────┐
+echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ────────────────────────────────────────────────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m!TEMPVARI01![48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─┐
 
 REM ECHO ├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 
-echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m─OCTAVE─DOWN─[48;2;0;0;0m!OCTAVE![48;2;!TRACKERTABCOLOUR!m─[7m[=][27m─OCTAVE─UP──┤
+echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m_OCTAVE─DOWN─[48;2;0;0;0m!OCTAVE![48;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
 
 ECHO │ Channel 1  !CH7_STAT_CURRNOTE! │:│ Channel 2  !CH8_STAT_CURRNOTE! │:│ Channel 3  !CH9_STAT_CURRNOTE! │:│ Channel 4  !CH10_STAT_CURRNOTE! │:│ Channel 5  !CH11_STAT_CURRNOTE! │:│ Channel 6  !CH12_STAT_CURRNOTE! │
 
@@ -429,7 +429,7 @@ ECHO [20;80H╩└─Done
 ECHO [20;80H╩
 
 IF !FRAMES! NEQ 1 ( 
-	ECHO [15;33H[7m[A][27m_ADD FRAME══[7m[R][27m_REMOVE CHOSEN FRAME══[7m[M][27m_MOVE FRAME
+	ECHO [15;33H[7m[A][27m_ADD FRAME══[7m[R][27m_REMOVE FRAME══[7m[M][27m_MOVE FRAME
 ) ELSE ECHO [15;33H[7m[A][27m_ADD FRAME
 
 ECHO [20;33H[7m[C][27m_COPY FRAME
@@ -460,7 +460,7 @@ IF !ERRORLEVEL! EQU 38 SET /A TEMPVARI02-=16
 IF !TEMPVARI02! LSS 1 SET /A TEMPVARI02=1
 IF !TEMPVARI02! GTR !FRAMES! SET /A TEMPVARI02=!FRAMES!
 IF !ERRORLEVEL! EQU 13 SET CURR_FRAME=!TEMPVARI02!&& GOTO DRAWLOGO
-IF !ERRORLEVEL! EQU 27 GOTO DRAWLOGO
+IF !ERRORLEVEL! EQU 27 SET CURR_FRAME=!TEMPVARI02!&& GOTO DRAWLOGO
 
 IF !ERRORLEVEL! EQU 65 (
 	SET /A FRAMES+=1
