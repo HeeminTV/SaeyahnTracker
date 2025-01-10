@@ -25,6 +25,14 @@ set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
 
 IF NOT EXIST "!APPDATA!\SaeyahnTracker\" mkdir "!APPDATA!\SaeyahnTracker\"
 
+IF NOT EXIST "!TEMPFILEPREFIX!CONFIG.TXT" (
+	(ECHO LOWLATENCY=0) > "!TEMPFILEPREFIX!CONFIG.TXT"
+	(ECHO SOUNDDRIVER=0) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+) 
+REM ELSE 
+FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO SET "%%A=%%B"
+REM PAUSE
+
 echo ^<# : has been brought from https://stackoverflow.com/questions/41132764/detect-keystrokes-in-different-window-with-batch > "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo @echo off ^& setlocal >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo powershell -noprofile "iex (${%%~f0} | out-string)" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
@@ -306,9 +314,16 @@ IF !SONG_PLAYING! EQU 0 (
 			REM ECHO [12;17H[0m[5m[3mCONFIGURATION[25m[23m
 			echo [15;4H▞▘ ▞▚ ▙▐ ▛▀ ▜▛ ▞▘ ▍▐ ▛▖ ▞▚ ▜▛ ▜▛ ▞▚ ▙▐ [4m▞▀[24m		SaeyahnTracker Version !VERSIONINFO!
 			echo [16;4H▚▖ ▚▞ ▍▜ ▛▘ ▟▙ ▚▜ ▚▞ ▛▖ ▛▜ ▐▍ ▟▙ ▚▞ ▍▜ ▃▞		Copyright 2024-2025 HeeminTV heeminwelcome1@gmail.com
+		REM )
+		REM PAUSE >NUL
+			CALL :CONFIGURATIONS
+			REM PAUSE >NUL
+			(ECHO LOWLATENCY=!LOWLATENCY!) > "!TEMPFILEPREFIX!CONFIG.TXT"
+			(ECHO SOUNDDRIVER=!SOUNDDRIVER!) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+			FOR /L %%A IN (29,-1,14) DO FOR /L %%B IN (0,1,118) DO ECHO [%%A;%%BH░&& BREAK >NUL
+			REM ECHO [0;0H[0m
+			GOTO DRAWLOGO
 		)
-		PAUSE >NUL
-			FOR /L %%A IN (29,-1,14) DO ECHO [%%A;0H...................................................................................................................... && CSCRIPT >NUL
 	)
 	IF !ERRORLEVEL! EQU 220 (
 		SET TEMPVARI02=!CURR_FRAME!
@@ -363,7 +378,8 @@ SET "SONGNAME=UNTITLED
 SET "SONGAUTHOR=FUCK"
 SET EDITSTEPS=1
 SET OCTAVE=3
-SET LOWLATENCY=0
+REM SET LOWLATENCY=0
+REM SET SOUNDDRIVER=0
 
 SET CURR_TAV=0
 SET CURR_FRAME=1
@@ -576,3 +592,26 @@ for /l %%i in (1,1,!TEMPVARI05!) do for /f "tokens=1* delims==" %%a in ("!TEMPVA
 )
 SET "FRAME%~1=!TEMPVARI04!"
 GOTO :EOF
+
+:CONFIGURATIONS
+REM ECHO H
+IF !LOWLATENCY! EQU 0 SET TEMPVARI01=OFF
+IF !LOWLATENCY! EQU 1 SET "TEMPVARI01=EDITING MODE"
+IF !LOWLATENCY! EQU 2 SET TEMPVARI01=ON
+ECHO [18;5H[7m[L][27m_Low-Latency Mode	:  !TEMPVARI01!                
+IF !SOUNDDRIVER! EQU 0 SET TEMPVARI01=ffplay.exe
+IF !SOUNDDRIVER! EQU 1 SET TEMPVARI01=archisnd.exe
+ECHO [19;5H[7m[D][27m_Sound Driver (Playing)	:  !TEMPVARI01!        
+ECHO [28;100H[7m[ENTER][27m_Save
+REM GOTO CONFIGURATIONS
+powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
+IF !ERRORLEVEL! EQU 13 goto :eof
+IF !ERRORLEVEL! EQU 76 IF !LOWLATENCY! LSS 2 ( 
+	SET /A LOWLATENCY+=1
+) ELSE SET LOWLATENCY=0
+IF !ERRORLEVEL! EQU 68 IF !SOUNDDRIVER! EQU 0 (
+	SET SOUNDDRIVER=1
+) ELSE SET SOUNDDRIVER=0
+
+GOTO CONFIGURATIONS
+REM goto :eof
