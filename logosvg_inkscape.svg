@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="0.71268239"
-     inkscape:cx="1075.5142"
-     inkscape:cy="19.644094"
+     inkscape:zoom="1.0078851"
+     inkscape:cx="851.7836"
+     inkscape:cy="152.79519"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-4"
@@ -43,7 +43,7 @@
          offset="0"
          id="stop26" />
       <stop
-         style="stop-color:#000000;stop-opacity:1;"
+         style="stop-color:#000000;stop-opacity:0;"
          offset="1"
          id="stop27" />
     </linearGradient>
@@ -85,7 +85,7 @@
        fx="200.7425"
        fy="35"
        r="200"
-       gradientTransform="matrix(1,0,0,0.175,0,28.875)"
+       gradientTransform="matrix(1,0,0,0.175,-0.74250001,28.875)"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <g
@@ -98,7 +98,7 @@
        id="rect1"
        width="400"
        height="70"
-       x="0.74250001"
+       x="-1.110223e-16"
        y="0" />
   </g>
   <g
@@ -107,11 +107,11 @@
      style="fill-opacity:1;fill:url(#meshgradient1);fill-rule:nonzero"
      inkscape:groupmode="layer">
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.188987"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3"
-       width="15"
+       width="20"
        height="5"
-       x="146.64832"
+       x="141.64832"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
@@ -135,18 +135,18 @@
        x="141.64832"
        y="35" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.188987"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0"
-       width="15"
+       width="20"
        height="5"
-       x="169.91165"
+       x="164.91165"
        y="50" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.188987"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0-5"
-       width="15"
+       width="20"
        height="5"
-       x="169.91165"
+       x="164.91165"
        y="60" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
@@ -163,9 +163,9 @@
        x="164.91165"
        y="35" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.188987"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0-5-3"
-       width="15"
+       width="19.999992"
        height="5"
        x="118.38499"
        y="60" />
@@ -177,12 +177,12 @@
        x="133.38498"
        y="35" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.154308"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218225"
        id="rect3-2-3-3-5"
        width="5"
-       height="10"
+       height="20"
        x="118.38499"
-       y="25" />
+       y="20" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect3-24-5-5"
@@ -191,9 +191,9 @@
        x="118.38499"
        y="35" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.410947"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.403896"
        id="rect3-24-5-5-6"
-       width="70.924728"
+       width="68.511604"
        height="5"
        x="118.38499"
        y="20" />
@@ -212,11 +212,11 @@
        x="198.55832"
        y="45" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.188987"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-6"
-       width="15"
+       width="20"
        height="5"
-       x="222.20499"
+       x="217.20499"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
@@ -234,6 +234,14 @@
        y="90.750313"
        transform="rotate(-30)" />
     <rect
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.345043"
+       id="rect3-2-2-5-2"
+       width="5"
+       height="50"
+       x="-199.45656"
+       y="-110.30801"
+       transform="matrix(-0.8660254,-0.5,-0.5,0.8660254,0,0)" />
+    <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-4-9"
        width="5"
@@ -248,11 +256,11 @@
        x="217.20499"
        y="35" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.188987"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0-4"
-       width="15"
+       width="20"
        height="5"
-       x="245.46832"
+       x="240.46832"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
@@ -276,13 +284,13 @@
        x="263.73169"
        y="35" />
     <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
-       id="rect3-2-2-2-9"
+       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.269608"
+       id="rect3-2-2-2-4"
        width="5"
-       height="30"
-       x="209.68491"
-       y="165.24005"
-       transform="rotate(-30)" />
+       height="30.527462"
+       x="215.2272"
+       y="158.01035"
+       transform="rotate(-28.162302)" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.322758"
        id="rect3-2-4-9-4"
@@ -290,14 +298,6 @@
        height="43.750004"
        x="278.73169"
        y="21.249996" />
-    <rect
-       style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.345043"
-       id="rect3-2-2-5-2"
-       width="5"
-       height="50"
-       x="-199.12161"
-       y="-111.55801"
-       transform="matrix(-0.8660254,-0.5,-0.5,0.8660254,0,0)" />
   </g>
   <script
      id="mesh_polyfill"

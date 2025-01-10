@@ -167,7 +167,7 @@ IF DEFINED BUFFER_INPUTNOTE (
 	REM PAUSEasnfjecandmngwsjas tsjejasvaeofjqejhaxigwnefjsddbrgwr         weigiw rergjwr
 	ECHO %TEMPVARI01% %TEMPVARI02%   
 	ECHO !TEMPVARI01! !TEMPVARI02!   
-	for /f "tokens=* delims==" %%a in ("!FRAME%CURR_FRAME%!") do for /F "tokens=!TEMPVARI02! delims==" %%b in ("%%a") do for /f "tokens= !TEMPVARI01! delims=:" %%1 in ("%%b") do (
+	for /f "tokens=* delims==" %%a in ("!FRAME%CURR_FRAME%!") do for /F "tokens=!TEMPVARI02! delims==" %%b in ("%%a") do for /f "tokens=!TEMPVARI01! delims=:" %%1 in ("%%b") do (
 		ECHO %%1
 		PAUSE
 	)
