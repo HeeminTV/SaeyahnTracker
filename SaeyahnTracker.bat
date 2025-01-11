@@ -15,7 +15,8 @@ echo  ████████▒░ ███████▒▒ ██▒▒▒
 echo ░░░░░░░░▒▒▒░░░░░░░▒▒▒░░▒▒▒▒▒░░▒▒░░░░░░░░▒▒▒░░░░▒▒░░▒▒▒▒░░▒▒▒░░░░░░▒▒▒▒░░░▒▒░░░▒▒░░░▒▒ 
 echo SaeyahnTracker / 새얀트래커 Copyright 2024-2025 HeeminTV
 echo Email: heeminwelcome1@gmail.com
-
+REM call :CREATE_COLORPICKER "1=2=3" par
+REM pause
 :: banner3-D by Merlin Greywolf merlin@brahms.udel.edu
 :: August 9, 1994
 
@@ -161,18 +162,40 @@ IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!
 IF !FRAMES! LSS 10 ( SET "TEMPVARI02=0!FRAMES!" ) ELSE SET TEMPVARI02=!FRAMES!
 ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H     
 IF DEFINED BUFFER_INPUTNOTE (
-	SET /A "TEMPVARI01=!FRAMESHOWTEMP_CURSORCH!-6"
 	SET /A "TEMPVARI02=!CURSOR_Y!+1"
-	REM echo FRAMESHOWTEMP_CURSORCH=!tempvari01! CURSOR_Y=!TEMPVARI02!
-	REM PAUSEasnfjecandmngwsjas tsjejasvaeofjqejhaxigwnefjsddbrgwr         weigiw rergjwr
-	ECHO %TEMPVARI01% %TEMPVARI02%   
-	ECHO !TEMPVARI01! !TEMPVARI02!   
-	for /f "tokens=* delims==" %%a in ("!FRAME%CURR_FRAME%!") do for /F "tokens=!TEMPVARI02! delims==" %%b in ("%%a") do for /f "tokens=!TEMPVARI01! delims=:" %%1 in ("%%b") do (
-		ECHO %%1
-		PAUSE
+	SET "TEMPVARI03="
+	SET I=1
+	REM SET TEMPVARI01=7
+	for %%b in (!FRAME%CURR_FRAME%!) do (
+		IF !I! LSS !TEMPVARI02! SET "TEMPVARI03=!TEMPVARI03!%%b="
+		IF !I! EQU !TEMPVARI02! FOR /F "tokens=1,2,3,4,5,6 delims=:" %%1 IN ("%%b") DO (
+			set "FRAMESHOWTEMP_7=%%1"
+			set "FRAMESHOWTEMP_8=%%2"
+			set "FRAMESHOWTEMP_9=%%3"
+			set "FRAMESHOWTEMP_10=%%4"
+			set "FRAMESHOWTEMP_11=%%5"
+			set "FRAMESHOWTEMP_12=%%6"
+			FOR /L %%A IN (7,1,12) DO (
+				IF %%A EQU !FRAMESHOWTEMP_CURSORCH! (
+					SET /A TEMPVARI01=!BUFFER_INPUTNOTE:~2,1!+OCTAVE
+					SET "TEMPVARI03=!TEMPVARI03!!BUFFER_INPUTNOTE:~0,2!!TEMPVARI01!!FRAMESHOWTEMP_%%A:~3!:"
+				) ELSE IF %%A EQU 12 (
+					SET "TEMPVARI03=!TEMPVARI03!!FRAMESHOWTEMP_%%A!:="
+				) ELSE SET "TEMPVARI03=!TEMPVARI03!!FRAMESHOWTEMP_%%A!:"
+
+			)
+		)
+		IF !I! GTR !TEMPVARI02! IF !I! EQU !ROWS! (
+			SET "TEMPVARI03=!TEMPVARI03!%%b"
+		) ELSE SET "TEMPVARI03=!TEMPVARI03!%%b="
+		SET /A I+=1
 	)
-	PAUSE
+	REM pause
+	REM ECHO !TEMPVARI03!
+	REM PAUSE
+	SET "FRAME!CURR_FRAME!=!TEMPVARI03!"
 	SET "BUFFER_INPUTNOTE="
+	SET /A CURSOR_Y+=EDITSTEPS
 )
 :DRAWTRACKER
 echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ────────────────────────────────────────────────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m%TEMPVARI01%[48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─┐
@@ -195,7 +218,7 @@ IF !ROWS! LEQ 12 (
 )
 SET /A SCROLL_MAX=SCROLL_MIN+12
 set I=0
-for /f "tokens=* delims==" %%a in ("!FRAME%CURR_FRAME%!") do for %%b in (%%a) do (
+for %%b in (!FRAME%CURR_FRAME%!) do (
 	SET "FRAMESHOWTEMP_ALL="
 	IF !I! LSS !SCROLL_MIN! SET /A I+=1
 	IF !I! GEQ !SCROLL_MIN! for /f "tokens=1,2,3,4,5,6 delims=:" %%1 in ("%%b") do (
@@ -265,12 +288,12 @@ IF !SONG_PLAYING! EQU 0 (
 		GOTO DRAWLOGO
 	)
 	IF !CURR_TAV! EQU 0 (
-		if "!errorlevel!"=="40" set /a CURSOR_Y+=!EDITSTEPS!
-		if "!errorlevel!"=="38" set /a CURSOR_Y-=!EDITSTEPS!
+		if "!errorlevel!"=="40" set /a CURSOR_Y+=EDITSTEPS
+		if "!errorlevel!"=="38" set /a CURSOR_Y-=EDITSTEPS
 		IF "!ERRORLEVEL!"=="36" set CURSOR_Y=0
 		IF "!ERRORLEVEL!"=="35" SET /A CURSOR_Y=ROWS-1
-		if "!errorlevel!"=="34" set /a CURSOR_Y+=!EDITSTEPS! * 4
-		if "!errorlevel!"=="33" set /a CURSOR_Y-=!EDITSTEPS! * 4
+		if "!errorlevel!"=="34" set /a CURSOR_Y+=EDITSTEPS * 4
+		if "!errorlevel!"=="33" set /a CURSOR_Y-=EDITSTEPS * 4
 
 		if "!errorlevel!"=="39" set /a CURSOR_X+=1
 		if "!errorlevel!"=="37" set /a CURSOR_X-=1
@@ -606,7 +629,7 @@ IF !ERRORLEVEL! EQU 82 IF !FRAMES! NEQ 1 (
 GOTO EDIT_FRAMES
 
 :GENERATEFRAME
-FOR /L %%A IN (1, 1, !ROWS!) do IF %%A EQU !ROWS! ( SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________" ) ELSE SET "FRAME%~1=!FRAME%~1!Cs4_________:____________:____________:____________:____________:____________="
+FOR /L %%A IN (1, 1, !ROWS!) do IF %%A EQU !ROWS! ( SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________" ) ELSE SET "FRAME%~1=!FRAME%~1!____________:____________:____________:____________:____________:____________="
 GOTO :EOF
 
 :MSGBOX
@@ -679,3 +702,9 @@ IF !ERRORLEVEL! EQU 68 IF !SOUNDDRIVER! EQU 0 (
 
 GOTO CONFIGURATIONS
 REM goto :eof
+
+:CREATE_COLORPICKER DF_COLOR VARINAME
+FOR /F "delims== tokens=1-3" %%A IN ("%~1") DO powershell -command "Add-Type -AssemblyName System.Windows.Forms ;$colorDialog = New-Object System.Windows.Forms.ColorDialog ;$colorDialog.FullOpen = $true ;$colorDialog.Color = [System.Drawing.Color]::FromArgb(%%A, %%B, %%C) ;if ($colorDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host \"$($colorDialog.Color.R)=$($colorDialog.Color.G)=$($colorDialog.Color.B)\" } else { Write-Host \"None\" }" >"!TEMP!\.tmp"
+SET /P %~2=<"!TEMP!\.tmp"
+DEL /Q "!TEMP!\.tmp"
+goto :eof
