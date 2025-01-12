@@ -177,8 +177,12 @@ IF DEFINED BUFFER_INPUTCONTENT (
 			FOR /L %%A IN (7,1,12) DO (
 				IF %%A EQU !FRAMESHOWTEMP_CURSORCH! (
 					IF %%Y EQU 0 (
-						SET /A TEMPVARI01=!BUFFER_INPUTCONTENT:~2,1!+OCTAVE
-						SET "TEMPVARI03=!TEMPVARI03!!BUFFER_INPUTCONTENT:~2,2!!TEMPVARI01!!FRAMESHOWTEMP_%%A:~3!:"
+						SET /A TEMPVARI01=!BUFFER_INPUTCONTENT:~4,1!+OCTAVE
+						IF "!FRAMESHOWTEMP_%%A:~3,2!"=="__" (
+							IF !CURR_INST! LSS 10 (
+								SET "TEMPVARI03=!TEMPVARI03!!BUFFER_INPUTCONTENT:~2,2!!TEMPVARI01!0!CURR_INST!!FRAMESHOWTEMP_%%A:~5!:"
+							) ELSE SET "TEMPVARI03=!TEMPVARI03!!BUFFER_INPUTCONTENT:~2,2!!TEMPVARI01!!CURR_INST!!FRAMESHOWTEMP_%%A:~5!:"
+						) ELSE SET "TEMPVARI03=!TEMPVARI03!!BUFFER_INPUTCONTENT:~2,2!!TEMPVARI01!!FRAMESHOWTEMP_%%A:~3!:"
 					) ELSE IF %%Y EQU 1 (
 						SET /A TEMPVARI01=%%Z - 48
 						SET "TEMPVARI03=!TEMPVARI03!!FRAMESHOWTEMP_%%A:~0,3!!TEMPVARI01!!FRAMESHOWTEMP_%%A:~4!:"
@@ -485,7 +489,7 @@ REM SET SOUNDDRIVER=0
 
 SET CURR_TAV=0
 SET CURR_FRAME=1
-SET CURR_INST=1
+SET CURR_INST=0
 
 SET CURSOR_X=0
 SET CURSOR_Y=0
@@ -720,7 +724,7 @@ GOTO CONFIGURATIONS
 REM goto :eof
 
 :CREATE_COLORPICKER DF_COLOR VARINAME
-FOR /F "delims== tokens=1-3" %%A IN ("%~1") DO powershell -command "Add-Type -AssemblyName System.Windows.Forms ;$colorDialog = New-Object System.Windows.Forms.ColorDialog ;$colorDialog.FullOpen = $true ;$colorDialog.Color = [System.Drawing.Color]::FromArgb(%%A, %%B, %%C) ;if ($colorDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host \"$($colorDialog.Color.R)=$($colorDialog.Color.G)=$($colorDialog.Color.B)\" } else { Write-Host \"None\" }" >"!TEMP!\.tmp"
+FOR /F "delims== tokens=1-3" %%A IN ("%~1") DO powershell -command "Add-Type -AssemblyName System.Windows.Forms ;$colorDialog = New-Object System.Windows.Forms.ColorDialog ;$colorDialog.FullOpen = $true ;$colorDialog.Color = [System.Drawing.Color]::FromArgb(%%A, %%B, %%C) ;if ($colorDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host \"$($colorDialog.Color.R)=$($colorDialog.Color.G)=$($colorDialog.Color.B)\" } else { Write-Host \"%%A=%%B=%%C\" }" >"!TEMP!\.tmp"
 SET /P %~2=<"!TEMP!\.tmp"
 DEL /Q "!TEMP!\.tmp"
 goto :eof
