@@ -26,10 +26,16 @@ set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
 
 IF NOT EXIST "!APPDATA!\SaeyahnTracker\" mkdir "!APPDATA!\SaeyahnTracker\"
 
-IF NOT EXIST "!TEMPFILEPREFIX!CONFIG.TXT" (
+REM IF NOT EXIST "!TEMPFILEPREFIX!CONFIG.TXT" (
 	(ECHO LOWLATENCY=0) > "!TEMPFILEPREFIX!CONFIG.TXT"
 	(ECHO SOUNDDRIVER=0) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-) 
+	(ECHO TRACKERDEFAULTCOLOUR=24;34;51) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+	(ECHO TRACKERHIGHLIGHTCOLOUR1=54;64;81) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+	(ECHO TRACKERHIGHLIGHTCOLOUR2=64;84;101) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+	(ECHO TRACKERCURSORPREVIEWCOLOUR=64;64;192) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+	(ECHO TRACKERCURSORRECORDCOLOUR=128;64;64) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+	(ECHO TRACKERTABCOLOUR=64;64;96) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+REM ) 
 
 FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO SET "%%A=%%B"
 
@@ -73,7 +79,8 @@ if "!TEMPVARI01!!TEMPVARI02!!TEMPVARI03!" NEQ "111" (
 	pause >nul
 	exit /b 55
 )
-
+REM call :CONVERTFROMCFGC
+REM pause
 call :RESET_VARIABLES
 
 SET B1=[5m
@@ -95,20 +102,9 @@ IF !CURR_TAV! EQU 0 (
 	SET "B2="
 	SET "B3="
 	SET "B4="
-	SET "TRACKERDEFAULTCOLOUR=24;34;51"
-	SET "TRACKERHIGHLIGHTCOLOUR1=54;64;81"
-	SET "TRACKERHIGHLIGHTCOLOUR2=64;84;101"
-	SET "TRACKERCURSORPREVIEWCOLOUR=64;64;192"
-	SET "TRACKERCURSORRECORDCOLOUR=128;64;64"
-	SET "TRACKERTABCOLOUR=64;64;96"
+	SET TRACKERCOLOR_TOGGLE=48
+	SET TRACKERCOLOR_BGCOLOR=0
 ) ELSE (
-	CALL :AVERAGEANSICOLOR TRACKERDEFAULTCOLOUR
-	CALL :AVERAGEANSICOLOR TRACKERHIGHLIGHTCOLOUR1
-	CALL :AVERAGEANSICOLOR TRACKERHIGHLIGHTCOLOUR2
-	CALL :AVERAGEANSICOLOR TRACKERCURSORPREVIEWCOLOUR
-	CALL :AVERAGEANSICOLOR TRACKERCURSORRECORDCOLOUR
-	CALL :AVERAGEANSICOLOR TRACKERTABCOLOUR
-
 	IF !CURR_TAV! EQU 1 ( 
 		SET "DISPLAYED_CURR_TAV=SONG INFORMATION"
 		SET B1=[5m
@@ -122,13 +118,14 @@ IF !CURR_TAV! EQU 0 (
 		SET B3=[5m
 		SET B4=[25m
 	)
+	SET TRACKERCOLOR_TOGGLE=38
+	SET TRACKERCOLOR_BGCOLOR=100
 )
 SET /A DELAY=15000/BPM-100
 CLS
-REM echo [0;0H[90mTracker ID: !UNIX![0m
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [0;0H[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [0;0H[0m[37m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
@@ -215,15 +212,16 @@ IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!
 IF !FRAMES! LSS 10 ( SET "TEMPVARI02=0!FRAMES!" ) ELSE SET TEMPVARI02=!FRAMES!
 ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H  
 :DRAWTRACKER
-echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ───────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m%TEMPVARI01%[48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─────────[`]_SAMPLE NO.↑──────────────────┐
+
+echo [!TRACKERCOLOR_BGCOLOR!m[13;0H[!TRACKERCOLOR_TOGGLE!;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ───────────────[7m[;][27m_PRV.  FRAME─[!TRACKERCOLOR_TOGGLE!;2;0;0;0m──[!TRACKERCOLOR_TOGGLE!;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME───────[7m[`][27m_SAMPLE─NO.↓─[!TRACKERCOLOR_TOGGLE!;2;0;0;0m──[!TRACKERCOLOR_TOGGLE!;2;!TRACKERTABCOLOUR!m─[7m[1][27m_SAMPLE─NO.↑┐
 
 REM ECHO ├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 
-echo ├──[7m[/][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m_OCTAVE─DOWN─[48;2;0;0;0m%OCTAVE%[48;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
+echo ├──[7m[/][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬─[7m[-][27m_OCTAVE─DOWN─[!TRACKERCOLOR_TOGGLE!;2;0;0;0m0─[!TRACKERCOLOR_TOGGLE!;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
 
 ECHO │ Channel 1  %CH7_STAT_CURRNOTE% │:│ Channel 2  %CH8_STAT_CURRNOTE% │:│ Channel 3  %CH9_STAT_CURRNOTE% │:│ Channel 4  %CH10_STAT_CURRNOTE% │:│ Channel 5  %CH11_STAT_CURRNOTE% │:│ Channel 6  %CH12_STAT_CURRNOTE% │
 
-ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[48;2;!TRACKERDEFAULTCOLOUR!m
+ECHO │----------------│-│----------------│-│----------------│-│----------------│-│----------------│-│----------------│[!TRACKERCOLOR_TOGGLE!;2;!TRACKERDEFAULTCOLOUR!m
 
 IF !ROWS! LEQ 12 (
 	SET SCROLL_MIN=0
@@ -273,18 +271,17 @@ for %%b in (!FRAME%CURR_FRAME%!) do (
 		)
 		IF !I! GEQ !SCROLL_MIN! IF !I! LEQ !SCROLL_MAX! IF !CURSOR_Y! EQU !I! ( 
 			IF !CURSOR_REC! EQU 0 ( 
-				ECHO [48;2;!TRACKERCURSORPREVIEWCOLOUR!m│!FRAMESHOWTEMP_ALL:~0,-2! [48;2;!TRACKERDEFAULTCOLOUR!m !i! 
-			) ELSE ECHO [48;2;!TRACKERCURSORRECORDCOLOUR!m│!FRAMESHOWTEMP_ALL:~0,-2! [48;2;!TRACKERDEFAULTCOLOUR!m !i! 
-			
+				ECHO [!TRACKERCOLOR_TOGGLE!;2;!TRACKERCURSORPREVIEWCOLOUR!m│!FRAMESHOWTEMP_ALL:~0,-2! [!TRACKERCOLOR_TOGGLE!;2;!TRACKERDEFAULTCOLOUR!m !i! 
+			) ELSE ECHO [!TRACKERCOLOR_TOGGLE!;2;!TRACKERCURSORRECORDCOLOUR!m│!FRAMESHOWTEMP_ALL:~0,-2! [!TRACKERCOLOR_TOGGLE!;2;!TRACKERDEFAULTCOLOUR!m !i! 			
 		) ELSE (
 			set /a "FRAMESHOWTEMP_HIGHLIGHT1=!i! %% HIGHLIGHT"
-			set /a "FRAMESHOWTEMP_HIGHLIGHT2=!i! %% (HIGHLIGHT*2)"
+			set /a "FRAMESHOWTEMP_HIGHLIGHT2=!i! %% (HIGHLIGHT*4)"
 			IF !FRAMESHOWTEMP_HIGHLIGHT1! NEQ 0 (
 				ECHO │!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m
 			) ELSE (
 				IF !FRAMESHOWTEMP_HIGHLIGHT2! NEQ 0 ( 
-					ECHO [48;2;!TRACKERHIGHLIGHTCOLOUR1!m│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[48;2;!TRACKERDEFAULTCOLOUR!m 
-				) ELSE ECHO [48;2;!TRACKERHIGHLIGHTCOLOUR2!m│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[48;2;!TRACKERDEFAULTCOLOUR!m 
+					ECHO [!TRACKERCOLOR_TOGGLE!;2;!TRACKERHIGHLIGHTCOLOUR1!m│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[!TRACKERCOLOR_TOGGLE!;2;!TRACKERDEFAULTCOLOUR!m 
+				) ELSE ECHO [!TRACKERCOLOR_TOGGLE!;2;!TRACKERHIGHLIGHTCOLOUR2!m│!FRAMESHOWTEMP_ALL:~0,-2! [7m !i! [27m[!TRACKERCOLOR_TOGGLE!;2;!TRACKERDEFAULTCOLOUR!m 
 			)
 		)
 		IF !I! GEQ !SCROLL_MAX! GOTO LOOPEXIT1 
@@ -424,22 +421,17 @@ IF !SONG_PLAYING! EQU 0 (
 		IF !ERRORLEVEL! EQU 65 CALL :SETTINGBOX "author of this project" "SONGAUTHOR"
 		goto drawlogo
 	) ELSE IF !CURR_TAV! EQU 2 (
-		REM PAUSE
 		IF !ERRORLEVEL! EQU 84 (
-			ECHO [13;0H[0m[92m+--------------------------------------------------------------------------------------------------------------------+
+			ECHO [13;0H[0m[!SETTINGSCOLOUR!m+--------------------------------------------------------------------------------------------------------------------+
 			FOR /L %%A IN (14,1,28) DO ECHO [%%A;0H^|                                                                                                                    ^| && CSCRIPT >NUL
 			ECHO +--------------------------------------------------------------------------------------------------------------------+
-			REM ECHO [12;17H[0m[5m[3mCONFIGURATION[25m[23m
 			echo [15;4H▞▘ ▞▚ ▙▐ ▛▀ ▜▛ ▞▘ ▍▐ ▛▖ ▞▚ ▜▛ ▜▛ ▞▚ ▙▐ [4m▞▀[24m		SaeyahnTracker Version !VERSIONINFO!
 			echo [16;4H▚▖ ▚▞ ▍▜ ▛▘ ▟▙ ▚▜ ▚▞ ▛▖ ▛▜ ▐▍ ▟▙ ▚▞ ▍▜ ▃▞		Copyright 2024-2025 HeeminTV heeminwelcome1@gmail.com
-		REM )
-		REM PAUSE >NUL
+			echo [23;0H+--------------------------------------------------------------------------------------------------------------------+
 			CALL :CONFIGURATIONS
-			REM PAUSE >NUL
 			(ECHO LOWLATENCY=!LOWLATENCY!) > "!TEMPFILEPREFIX!CONFIG.TXT"
 			(ECHO SOUNDDRIVER=!SOUNDDRIVER!) >> "!TEMPFILEPREFIX!CONFIG.TXT"
 			FOR /L %%A IN (29,-1,14) DO FOR /L %%B IN (0,1,118) DO ECHO [%%A;%%BH░&& BREAK >NUL
-			REM ECHO [0;0H[0m
 			GOTO DRAWLOGO
 		)
 	)
@@ -485,39 +477,6 @@ IF !CURSOR_Y! GEQ !ROWS! (
 )
 
 GOTO DRAWTRACKER
-
-:RESET_VARIABLES
-FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX=%%A"
-
-SET BPM=165
-SET HIGHLIGHT=4
-SET ROWS=64
-SET "SONGNAME=UNTITLED
-SET "SONGAUTHOR=FUCK"
-SET EDITSTEPS=1
-SET OCTAVE=3
-REM SET LOWLATENCY=0
-REM SET SOUNDDRIVER=0
-
-SET CURR_TAV=0
-SET CURR_FRAME=1
-SET CURR_INST=0
-
-SET CURSOR_X=0
-SET CURSOR_Y=0
-SET CURSOR_REC=0
-SET FRAMESHOWTEMP_CURSORCH=7
-SET FRAMESHOWTEMP_CURSORINDEX=0
-
-SET SONG_PLAYING=0
-
-SET CH7_STAT_CURRNOTE=___
-SET CH8_STAT_CURRNOTE=___
-SET CH9_STAT_CURRNOTE=___
-SET CH10_STAT_CURRNOTE=___
-SET CH11_STAT_CURRNOTE=___
-SET CH12_STAT_CURRNOTE=___
-GOTO :eOF
 
 :STRLENFIT
 set "STRLENFIT_TEMPVAR1=%1"
@@ -713,7 +672,6 @@ SET "FRAME%~1=!TEMPVARI04!"
 GOTO :EOF
 
 :CONFIGURATIONS
-REM ECHO H
 IF !LOWLATENCY! EQU 0 SET TEMPVARI01=OFF
 IF !LOWLATENCY! EQU 1 SET "TEMPVARI01=EDITING MODE"
 IF !LOWLATENCY! EQU 2 SET TEMPVARI01=ON
@@ -721,8 +679,9 @@ ECHO [18;5H[7m[L][27m_Low-Latency Mode	:  !TEMPVARI01!
 IF !SOUNDDRIVER! EQU 0 SET TEMPVARI01=ffplay.exe
 IF !SOUNDDRIVER! EQU 1 SET TEMPVARI01=archisnd.exe
 ECHO [19;5H[7m[D][27m_Sound Driver (Playing)	:  !TEMPVARI01!        
-ECHO [28;100H[7m[ENTER][27m_Save
-REM GOTO CONFIGURATIONS
+ECHO [28;47H[7m[I][27m_Import	[7m[E][27m_Export	[7m[X][27m_Import .cfgc	[7m[ENTER][27m_Save
+
+ECHO [24;5H[[38;2;!TRACKERDEFAULTCOLOUR!m██[!SETTINGSCOLOUR!m]_Base Pattern Color	[[38;2;!TRACKERHIGHLIGHTCOLOUR1!m██[!SETTINGSCOLOUR!m]_Pattern Highlight 1	[[38;2;!TRACKERHIGHLIGHTCOLOUR2!m██[!SETTINGSCOLOUR!m]_Pattern Highlight 2
 powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)"
 IF !ERRORLEVEL! EQU 13 goto :eof
 IF !ERRORLEVEL! EQU 76 IF !LOWLATENCY! LSS 2 ( 
@@ -733,10 +692,55 @@ IF !ERRORLEVEL! EQU 68 IF !SOUNDDRIVER! EQU 0 (
 ) ELSE SET SOUNDDRIVER=0
 
 GOTO CONFIGURATIONS
-REM goto :eof
+REM goto :eofTLQKFTLQKFLTLQFKTLQFKKTLQLWRTLQWLTQIFHIUDHUIWENFKAKGTLTLQKFROtSORK QWNFDURJQFJLFFK
+	REM SET "TRACKERDEFAULTCOLOUR=24;34;51"
+	REM SET "TRACKERHIGHLIGHTCOLOUR1=54;64;81"
+	REM SET "TRACKERHIGHLIGHTCOLOUR2=64;84;101"
+	REM SET "TRACKERCURSORPREVIEWCOLOUR=64;64;192"
+	REM SET "TRACKERCURSORRECORDCOLOUR=128;64;64"
+	REM SET "TRACKERTABCOLOUR=64;64;96"
+	
 
 :CREATE_COLORPICKER DF_COLOR VARINAME
 FOR /F "delims== tokens=1-3" %%A IN ("%~1") DO powershell -command "Add-Type -AssemblyName System.Windows.Forms ;$colorDialog = New-Object System.Windows.Forms.ColorDialog ;$colorDialog.FullOpen = $true ;$colorDialog.Color = [System.Drawing.Color]::FromArgb(%%A, %%B, %%C) ;if ($colorDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host \"$($colorDialog.Color.R)=$($colorDialog.Color.G)=$($colorDialog.Color.B)\" } else { Write-Host \"%%A=%%B=%%C\" }" >"!TEMP!\.tmp"
 SET /P %~2=<"!TEMP!\.tmp"
 DEL /Q "!TEMP!\.tmp"
 goto :eof
+
+:CONVERTFROMCFGC
+powershell -command "$colorInt = -13395661; $red = ($colorInt -shr 16) -band 0xFF; $green = ($colorInt -shr 8) -band 0xFF; $blue = $colorInt -band 0xFF; Write-Host \"$($red)=$($green)=$($blue)\""
+goto :eof
+
+:RESET_VARIABLES
+FOR /F %%A IN ('cscript //nologo "!TEMPFILEPREFIX!UNIXTIME.JS"') DO SET "UNIX=%%A"
+
+SET BPM=165
+SET HIGHLIGHT=4
+SET ROWS=64
+SET "SONGNAME=UNTITLED
+SET "SONGAUTHOR=FUCK"
+SET EDITSTEPS=1
+SET OCTAVE=3
+
+SET CURR_TAV=0
+SET CURR_FRAME=1
+SET CURR_INST=0
+
+SET CURSOR_X=0
+SET CURSOR_Y=0
+SET CURSOR_REC=0
+SET FRAMESHOWTEMP_CURSORCH=7
+SET FRAMESHOWTEMP_CURSORINDEX=0
+
+SET SONG_PLAYING=0
+
+SET CH7_STAT_CURRNOTE=___
+SET CH8_STAT_CURRNOTE=___
+SET CH9_STAT_CURRNOTE=___
+SET CH10_STAT_CURRNOTE=___
+SET CH11_STAT_CURRNOTE=___
+SET CH12_STAT_CURRNOTE=___
+
+SET SETTINGSCOLOUR=93
+REM SET TRACKERCOLOR_TOGGLE=48
+GOTO :EOF
