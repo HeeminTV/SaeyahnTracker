@@ -30,9 +30,8 @@ IF NOT EXIST "!TEMPFILEPREFIX!CONFIG.TXT" (
 	(ECHO LOWLATENCY=0) > "!TEMPFILEPREFIX!CONFIG.TXT"
 	(ECHO SOUNDDRIVER=0) >> "!TEMPFILEPREFIX!CONFIG.TXT"
 ) 
-REM ELSE 
+
 FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO SET "%%A=%%B"
-REM PAUSE
 
 echo ^<# : has been brought from https://stackoverflow.com/questions/41132764/detect-keystrokes-in-different-window-with-batch > "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo @echo off ^& setlocal >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
@@ -60,15 +59,15 @@ echo CreateObject("Wscript.Shell").Run "" ^& WScript.Arguments(0) ^& "", 0, Fals
 
 echo WScript.Sleep WScript.Arguments(0) > "!TEMPFILEPREFIX!SLEEP.VBS"
 
-set fmpeg=0
-set fplay=0
-set fprobe=0
+set TEMPVARI01=0
+set TEMPVARI02=0
+set TEMPVARI03=0
 
-IF EXIST "ffmpeg.exe" ( set "fmpeg=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffmpeg.exe" set "fmpeg=1"
-IF EXIST "ffplay.exe" ( set "fplay=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffplay.exe" set "fplay=1"
-IF EXIST "ffprobe.exe" ( set "fprobe=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffprobe.exe" set "fprobe=1"
+IF EXIST "ffmpeg.exe" ( set "TEMPVARI01=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffmpeg.exe" set "TEMPVARI01=1"
+IF EXIST "ffplay.exe" ( set "TEMPVARI02=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffplay.exe" set "TEMPVARI02=1"
+IF EXIST "ffprobe.exe" ( set "TEMPVARI03=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffprobe.exe" set "TEMPVARI03=1"
 
-if "!fmpeg!!fplay!!fprobe!" NEQ "111" (
+if "!TEMPVARI01!!TEMPVARI02!!TEMPVARI03!" NEQ "111" (
 	call :ERRORBOX
 	echo [17;33HSaeyahnTracker could not find the FFmpeg set in this computer.[18;33HPlease make sure "ffmpeg.exe", "ffplay.exe" and "ffprobe.exe"[19;33Hin the system path or the same directory as this script.
 	pause >nul
@@ -126,7 +125,7 @@ IF !CURR_TAV! EQU 0 (
 )
 SET /A DELAY=15000/BPM-100
 CLS
-echo [30;0H[90mTracker ID: !UNIX![0m
+REM echo [0;0H[90mTracker ID: !UNIX![0m
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
 echo [0;0H[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -157,10 +156,7 @@ IF !SONG_PLAYING! EQU 0 (
 			
 ) ELSE ECHO └──  [5m[3mPLAYING...[23m[25m  ────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
-:DRAWFRAME
-IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!CURR_FRAME!"
-IF !FRAMES! LSS 10 ( SET "TEMPVARI02=0!FRAMES!" ) ELSE SET TEMPVARI02=!FRAMES!
-ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H     
+:DRAWFRAME   
 IF DEFINED BUFFER_INPUTCONTENT (
 	SET /A "TEMPVARI02=CURSOR_Y+1"
 	SET "TEMPVARI03="
@@ -215,12 +211,15 @@ IF DEFINED BUFFER_INPUTCONTENT (
 	SET "BUFFER_INPUTCONTENT="
 	SET /A CURSOR_Y+=EDITSTEPS
 )
+IF !CURR_FRAME! LSS 10 ( SET "TEMPVARI01=0!CURR_FRAME!" ) ELSE SET "TEMPVARI01=!CURR_FRAME!"
+IF !FRAMES! LSS 10 ( SET "TEMPVARI02=0!FRAMES!" ) ELSE SET TEMPVARI02=!FRAMES!
+ECHO [13;114H[44mFRAME[14;114H     [15;114H[5m!TEMPVARI01![25m/!TEMPVARI02![16;114H  
 :DRAWTRACKER
-echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ────────────────────────────────────────────────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m%TEMPVARI01%[48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─┐
+echo [13;0H[48;2;!TRACKERTABCOLOUR!m┌[7m[F1][27m─ TRACKER SECTION ───────────────[7m[;][27m_PRV.  FRAME[48;2;0;0;0m%TEMPVARI01%[48;2;!TRACKERTABCOLOUR!m─[7m['][27m_NEXT FRAME─────────[`]_SAMPLE NO.───────────────────┐
 
 REM ECHO ├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 
-echo ├──[7m[`][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m_OCTAVE─DOWN─[48;2;0;0;0m%OCTAVE%[48;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
+echo ├──[7m[/][27m_SAMPLES──[7m[\][27m_FRAMES──────────┬─┬────────────────┬─┬────────────────┬─┬──[7m[-][27m_OCTAVE─DOWN─[48;2;0;0;0m%OCTAVE%[48;2;!TRACKERTABCOLOUR!m─[7m[=][27m_OCTAVE─UP──┤
 
 ECHO │ Channel 1  %CH7_STAT_CURRNOTE% │:│ Channel 2  %CH8_STAT_CURRNOTE% │:│ Channel 3  %CH9_STAT_CURRNOTE% │:│ Channel 4  %CH10_STAT_CURRNOTE% │:│ Channel 5  %CH11_STAT_CURRNOTE% │:│ Channel 6  %CH12_STAT_CURRNOTE% │
 
@@ -231,7 +230,9 @@ IF !ROWS! LEQ 12 (
 ) ELSE (
 	IF !CURSOR_Y! GEQ 6 ( 
 		SET /A SCROLL_MINTEMP=ROWS-6
-		IF !CURSOR_Y! GEQ !SCROLL_MINTEMP! ( SET /A SCROLL_MIN=ROWS-13 ) ELSE SET /A SCROLL_MIN=CURSOR_Y-6
+		IF !CURSOR_Y! GEQ !SCROLL_MINTEMP! ( 
+			SET /A SCROLL_MIN=ROWS-13 
+		) ELSE SET /A SCROLL_MIN=CURSOR_Y-6
 	) ELSE SET SCROLL_MIN=0
 )
 SET /A SCROLL_MAX=SCROLL_MIN+12
