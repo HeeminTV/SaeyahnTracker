@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="400mm"
+   width="200mm"
    height="70mm"
-   viewBox="0 0 400 70"
+   viewBox="0 0 200 70"
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
@@ -23,15 +23,16 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="0.66747358"
-     inkscape:cx="1031.5015"
-     inkscape:cy="368.55391"
-     inkscape:window-width="1920"
-     inkscape:window-height="1009"
-     inkscape:window-x="-4"
-     inkscape:window-y="-4"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:zoom="0.94395019"
+     inkscape:cx="444.93873"
+     inkscape:cy="129.7738"
+     inkscape:window-width="1554"
+     inkscape:window-height="1032"
+     inkscape:window-x="617"
+     inkscape:window-y="75"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     showgrid="false" />
   <defs
      id="defs1">
     <meshgradient
@@ -89,6 +90,35 @@
          stdDeviation="2.9927529"
          id="feGaussianBlur34" />
     </filter>
+    <meshgradient
+       inkscape:collect="always"
+       id="meshgradient8"
+       gradientUnits="userSpaceOnUse"
+       x="117.32666"
+       y="11.339744">
+      <meshrow
+         id="meshrow11">
+        <meshpatch
+           id="meshpatch11">
+          <stop
+             path="c 55.1156,0  110.231,0  165.347,0"
+             style="stop-color:#ffffff;stop-opacity:1"
+             id="stop8" />
+          <stop
+             path="c 0,17.8868  0,35.7735  0,53.6603"
+             style="stop-color:#000000;stop-opacity:1"
+             id="stop9" />
+          <stop
+             path="c -55.1156,0  -110.231,0  -165.347,0"
+             style="stop-color:#ffffff;stop-opacity:1"
+             id="stop10" />
+          <stop
+             path="c 0,-17.8868  0,-35.7735  0,-53.6603"
+             style="stop-color:#000000;stop-opacity:1"
+             id="stop11" />
+        </meshpatch>
+      </meshrow>
+    </meshgradient>
   </defs>
   <g
      inkscape:label="Layer 1"
@@ -96,215 +126,215 @@
      id="layer1"
      style="display:inline">
     <rect
-       style="fill:#2a3f52;fill-rule:evenodd;stroke-width:3;stroke-linecap:square;stroke-miterlimit:0;stroke-dasharray:3, 3;paint-order:markers stroke fill;fill-opacity:0.76991153"
+       style="fill:#2a3f52;fill-opacity:0.769912;fill-rule:evenodd;stroke-width:3;stroke-linecap:square;stroke-miterlimit:0;stroke-dasharray:3, 3;paint-order:markers stroke fill"
        id="rect1"
        width="197.40482"
        height="56.918957"
-       x="101.29759"
+       x="1.2975922"
        y="13.081041" />
   </g>
   <g
      id="g34"
      inkscape:label="Font 복사"
-     style="fill-opacity:1;fill:#000000;fill-rule:nonzero;filter:url(#filter34)"
+     style="fill:#000000;fill-opacity:1;fill-rule:nonzero;filter:url(#filter34)"
      inkscape:groupmode="layer">
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect8"
        width="20"
        height="5"
-       x="140.59"
+       x="40.589996"
        y="50" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect9"
        width="5"
        height="30"
-       x="140.59"
+       x="40.589996"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect10"
        width="5"
        height="30"
-       x="155.59"
+       x="55.589996"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect11"
        width="20"
        height="5"
-       x="140.59"
+       x="40.589996"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect12"
        width="20"
        height="5"
-       x="163.85333"
+       x="63.853333"
        y="50" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect13"
        width="20"
        height="5"
-       x="163.85333"
+       x="63.853333"
        y="60" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect14"
        width="5"
        height="30"
-       x="163.85333"
+       x="63.853333"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect15"
        width="20"
        height="5"
-       x="163.85333"
+       x="63.853333"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect16"
        width="19.999992"
        height="5"
-       x="117.32667"
+       x="17.326668"
        y="60" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect17"
        width="5"
        height="30"
-       x="132.32666"
+       x="32.32666"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218225"
        id="rect18"
        width="5"
        height="20"
-       x="117.32667"
+       x="17.326668"
        y="20" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect19"
        width="20"
        height="5"
-       x="117.32667"
+       x="17.326668"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.403896"
        id="rect20"
        width="68.511604"
        height="5"
-       x="117.32667"
+       x="17.326668"
        y="20" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.410947"
        id="rect21"
        width="70.924728"
        height="5"
-       x="211.74861"
+       x="111.74861"
        y="20" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect22"
        width="5"
        height="20"
-       x="197.5"
+       x="97.5"
        y="45" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect23"
        width="20"
        height="5"
-       x="216.14667"
+       x="116.14666"
        y="50" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect24"
        width="5"
        height="30"
-       x="216.14667"
+       x="116.14666"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.345043"
        id="rect25"
        width="5"
        height="50"
-       x="147.87015"
-       y="90.221153"
+       x="61.267609"
+       y="40.221153"
        transform="rotate(-30)" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.345043"
        id="rect26"
        width="5"
        height="50"
-       x="-198.54002"
-       y="-109.77885"
+       x="-111.93748"
+       y="-59.778847"
        transform="matrix(-0.8660254,-0.5,-0.5,0.8660254,0,0)" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect27"
        width="5"
        height="30"
-       x="231.14667"
+       x="131.14667"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect28"
        width="20"
        height="5"
-       x="216.14667"
+       x="116.14666"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect29"
        width="20"
        height="5"
-       x="239.41"
+       x="139.41"
        y="50" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect30"
        width="5"
        height="30"
-       x="239.41"
+       x="139.41"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect31"
        width="5"
        height="30"
-       x="254.41"
+       x="154.41"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect32"
        width="5"
        height="30"
-       x="262.67337"
+       x="162.67337"
        y="35" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.269608"
        id="rect33"
        width="5"
        height="30.527462"
-       x="214.29417"
-       y="157.51085"
+       x="126.13276"
+       y="110.31377"
        transform="rotate(-28.162302)" />
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.322758"
        id="rect34"
        width="5"
        height="43.750004"
-       x="277.67337"
+       x="177.67337"
        y="21.249996" />
   </g>
   <g
      id="g110"
      inkscape:label="Blur"
-     style="display:none;mix-blend-mode:multiply;fill:url(#meshgradient1);fill-opacity:1;fill-rule:nonzero;filter:url(#filter110)"
+     style="display:none;mix-blend-mode:multiply;fill:url(#meshgradient8);fill-opacity:1;fill-rule:nonzero;filter:url(#filter110)"
      inkscape:groupmode="layer">
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
@@ -502,199 +532,199 @@
   <g
      id="layer2"
      inkscape:label="Font"
-     style="fill-opacity:1;fill:url(#meshgradient1);fill-rule:nonzero"
+     style="fill:url(#meshgradient1);fill-opacity:1;fill-rule:nonzero"
      inkscape:groupmode="layer">
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3"
        width="20"
        height="5"
-       x="140.59"
+       x="40.589996"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2"
        width="5"
        height="30"
-       x="140.59"
+       x="40.589996"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-4"
        width="5"
        height="30"
-       x="155.59"
+       x="55.589996"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect3-24"
        width="20"
        height="5"
-       x="140.59"
+       x="40.589996"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0"
        width="20"
        height="5"
-       x="163.85333"
+       x="63.853333"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0-5"
        width="20"
        height="5"
-       x="163.85333"
+       x="63.853333"
        y="60" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-3"
        width="5"
        height="30"
-       x="163.85333"
+       x="63.853333"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect3-24-5"
        width="20"
        height="5"
-       x="163.85333"
+       x="63.853333"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0-5-3"
        width="19.999992"
        height="5"
-       x="117.32667"
+       x="17.326668"
        y="60" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-3-3"
        width="5"
        height="30"
-       x="132.32666"
+       x="32.32666"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218225"
        id="rect3-2-3-3-5"
        width="5"
        height="20"
-       x="117.32667"
+       x="17.326668"
        y="20" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect3-24-5-5"
        width="20"
        height="5"
-       x="117.32667"
+       x="17.326668"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.403896"
        id="rect3-24-5-5-6"
        width="68.511604"
        height="5"
-       x="117.32667"
+       x="17.326668"
        y="20" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.410947"
        id="rect3-24-5-5-6-3"
        width="70.924728"
        height="5"
-       x="211.74861"
+       x="111.74861"
        y="20" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect3-2-3-3-3"
        width="5"
        height="20"
-       x="197.5"
+       x="97.5"
        y="45" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-6"
        width="20"
        height="5"
-       x="216.14667"
+       x="116.14666"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-2"
        width="5"
        height="30"
-       x="216.14667"
+       x="116.14666"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.345043"
        id="rect3-2-2-5"
        width="5"
        height="50"
-       x="147.87015"
-       y="90.221153"
+       x="61.267609"
+       y="40.221153"
        transform="rotate(-30)" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.345043"
        id="rect3-2-2-5-2"
        width="5"
        height="50"
-       x="-198.54002"
-       y="-109.77885"
+       x="-111.93748"
+       y="-59.778847"
        transform="matrix(-0.8660254,-0.5,-0.5,0.8660254,0,0)" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-4-9"
        width="5"
        height="30"
-       x="231.14667"
+       x="131.14667"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218224"
        id="rect3-24-9"
        width="20"
        height="5"
-       x="216.14667"
+       x="116.14666"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.218223"
        id="rect3-0-4"
        width="20"
        height="5"
-       x="239.41"
+       x="139.41"
        y="50" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-3-8"
        width="5"
        height="30"
-       x="239.41"
+       x="139.41"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-3-8-4"
        width="5"
        height="30"
-       x="254.41"
+       x="154.41"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.267269"
        id="rect3-2-2-2"
        width="5"
        height="30"
-       x="262.67337"
+       x="162.67337"
        y="35" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.269608"
        id="rect3-2-2-2-4"
        width="5"
        height="30.527462"
-       x="214.29417"
-       y="157.51085"
+       x="126.13276"
+       y="110.31377"
        transform="rotate(-28.162302)" />
     <rect
        style="fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke-width:0.322758"
        id="rect3-2-4-9-4"
        width="5"
        height="43.750004"
-       x="277.67337"
+       x="177.67337"
        y="21.249996" />
   </g>
   <script
