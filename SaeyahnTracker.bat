@@ -79,12 +79,7 @@ if "!TEMPVARI01!!TEMPVARI02!!TEMPVARI03!" NEQ "111" (
 	pause >nul
 	exit /b 55
 )
-REM call :CONVERTFROMCFGC
-REM pause
 call :RESET_VARIABLES
-
-SET B1=[5m
-set B2=[25m
 
 :REFRESHALL
 CALL :GENERATEFRAME 1
@@ -123,9 +118,10 @@ IF !CURR_TAV! EQU 0 (
 )
 SET /A DELAY=15000/BPM-100
 CLS
+COLOR 07 2>nul
 CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [0;0H[40m[37m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [H[37m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
