@@ -67,7 +67,8 @@ TRACKERHIGHLIGHTCOLOUR1=54;64;81:^
 TRACKERHIGHLIGHTCOLOUR2=64;84;101:^
 TRACKERCURSORPREVIEWCOLOUR=64;64;192:^
 TRACKERCURSORRECORDCOLOUR=128;64;64:^
-TRACKERTABCOLOUR=64;64;96:
+TRACKERTABCOLOUR=64;64;96:^
+COLOUR_MAINTAB=8;8;64
 
 :: End of factory default settings
 
@@ -174,33 +175,33 @@ CLS
 COLOR 07 2>nul
 CALL :STRLENFIT DISPLAYED_GLOBAL 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
-echo [H[37m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+echo [H[37m[48;2;!COLOUR_MAINTAB!m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
 ECHO └──[7m!B3![O]!B4![27m_OPEN──[7m!B3![S]!B4![27m_SAVE──[7m!B3![R]!B4![27m_RENDER──[7m!B3![T]!B4![27m_CONFIGURATION──────────────────────────────────────────────────────────────────┘[0m
 
 echo ┌[7m[F3][27m─ SONG INFORMATION ──────────────────────────────────────────────────────────────────────────────────────────────┐
 
-echo │  [90m________________\[93mSAEYAHN[90m/________________[0m	[7m!B1![B]!B2![27m_BPM		: !BPM!	│[7m!B1![T]!B2![27m_SONG TITLE	: [4m!DISPLAYED_SONGNAME![24m │
+echo │                                           	[7m!B1![B]!B2![27m_BPM		: !BPM!	│[7m!B1![T]!B2![27m_SONG TITLE	: [4m!DISPLAYED_SONGNAME![24m │
 
-echo │  [90m^|                \     /                ^|[0m	[7m!B1![R]!B2![27m_ROWS	: !ROWS!	│[7m!B1![A]!B2![27m_AUTHOR	: [4m!DISPLAYED_GLOBAL![24m │
+echo │                                           	[7m!B1![R]!B2![27m_ROWS	: !ROWS!	│[7m!B1![A]!B2![27m_AUTHOR	: [4m!DISPLAYED_GLOBAL![24m │
 
-echo │  ^|____ _____ _____ \   / _____ _   _ _   ^|	[7m!B1![H]!B2![27m_HIGHLIGHT	: !HIGHLIGHT!	│
+echo │                                           	[7m!B1![H]!B2![27m_HIGHLIGHT	: !HIGHLIGHT!	│
 
-echo │      ^| ^|   ^| ^|      \ /  ^|   ^| ^|   ^| ^|\  ^|	[7m!B1![S]!B2![27m_EDIT STEP^(S^): !EDITSTEPS!	│
+echo │                                           	[7m!B1![S]!B2![27m_EDIT STEP^(S^): !EDITSTEPS!	│
 
-echo │      ^| ^|___^| ^|____   ^|   ^|___^| ^|___^| ^| \ ^|
+echo │                                          
 
-echo │      │ │   │ │       │   │   │ │   │ │  \│
+echo │                                          
 
-echo │  [97m╙───┘ ┴   ┴ └────  ─┴─  ┴   ┴ ┴   ┴ ┴   ┴[0m
+echo │                                           
 
 echo │  	Tracker Version !VERSIONINFO!
 
 IF !SONG_PLAYING! EQU 0 (
 
-	ECHO └──  YOU ARE IN [5m[3m!DISPLAYED_CURR_TAV![23m[25m  ───────────────────────────────────────────────────────────────────────────────────┘
+	ECHO └──  YOU ARE IN [5m[3m!DISPLAYED_CURR_TAV![23m[25m  ────────────────────────────────────────────────────────────────────────────────────┘
 			
-) ELSE ECHO └──  [5m[3mPLAYING...[23m[25m  ────────────────────────────────────────────────────────────────────────────────────────────────────┘
+) ELSE ECHO └──  [5m[3mPLAYING...[23m[25m  ─────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 :DRAWFRAME   
 IF DEFINED BUFFER_INPUTCONTENT (
