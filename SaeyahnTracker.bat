@@ -4,27 +4,16 @@ SET "VERSIONINFO=DEV. VERSION"
 TITLE SaeyahnTracker !VERSIONINFO!	
 chcp 65001 >nul
 mode 120, 30 >nul
+echo [100;3H[90mSaeyahnTracker / 새얀트래커 Copyright 2024-2025 HeeminTV				Email: heeminwelcome1@gmail.com[0m
 
-echo  ██▒▒▒▒▒▒▒▒ ███████▒▒▒▒▒ ███▒▒▒▒ ████████▒▒ ████▒ ██▒▒▒ ██▒▒ ██████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 
-echo  ██▒▒▒▒▒▒▒ ██░░░░ ██▒▒▒ ██ ██▒▒▒ ██░░░░ ██▒░ ██▒▒ ███▒▒ ██▒ ██░░░ ██▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 
-echo  ██▒▒▒▒▒▒▒ ██▒▒▒▒ ██▒▒ ██▒░ ██▒▒ ██▒▒▒▒ ██▒▒ ██▒▒ ████▒ ██▒ ██▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 
-echo  ██▒▒▒▒▒▒▒ ██▒▒▒▒ ██▒ ██▒▒▒░ ██▒ ██▒▒▒▒ ██▒▒ ██▒▒ ██ ██ ██▒ ██▒▒ ████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 
-echo  ██▒▒▒▒▒▒▒ ██▒▒▒▒ ██▒ █████████▒ ██▒▒▒▒ ██▒▒ ██▒▒ ██░ ████▒ ██▒▒▒ ██▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 
-echo  ██▒▒▒▒▒▒▒ ██▒▒▒▒ ██▒ ██░░░░ ██▒ ██▒▒▒▒ ██▒▒ ██▒▒ ██▒░ ███▒ ██▒▒▒ ██▒▒ ███▒ ███▒ ███▒ 
-echo  ████████▒░ ███████▒▒ ██▒▒▒▒ ██▒ ████████▒▒ ████▒ ██▒▒░ ██▒░ ██████▒▒▒ ███▒ ███▒ ███▒ 
-echo ░░░░░░░░▒▒▒░░░░░░░▒▒▒░░▒▒▒▒▒░░▒▒░░░░░░░░▒▒▒░░░░▒▒░░▒▒▒▒░░▒▒▒░░░░░░▒▒▒▒░░░▒▒░░░▒▒░░░▒▒ 
-echo SaeyahnTracker / 새얀트래커 Copyright 2024-2025 HeeminTV
-echo Email: heeminwelcome1@gmail.com
-REM call :CREATE_COLORPICKER "1=2=3" par
-REM pause
-:: banner3-D by Merlin Greywolf merlin@brahms.udel.edu
-:: August 9, 1994
-
-:: https://github.com/user-attachments/assets/4fe5ee8a-86d9-4c29-b9de-57796af313d1
-
+CALL :DRAW_LOGO_IN 5 39
 set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
-
 IF NOT EXIST "!APPDATA!\SaeyahnTracker\" mkdir "!APPDATA!\SaeyahnTracker\"
+
+:: Enter the DEFAULT values ​​for the settings below
+:: - 
+:: Chunks of settings ​​are separated by `:` 
+:: and use new line scape characters (`^`) to make them more readable.
 
 SET SETTINGS_DEFAULT=^
 LOWLATENCY=0:^
@@ -35,22 +24,16 @@ TRACKERHIGHLIGHTCOLOUR2=64;84;101:^
 TRACKERCURSORPREVIEWCOLOUR=64;64;192:^
 TRACKERCURSORRECORDCOLOUR=128;64;64:^
 TRACKERTABCOLOUR=64;64;96:
-REM FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO ECHO %%A, %%B-0
-REM PAUSE
-FOR /F "delims=: tokens=1" %%A IN ("!SETTINGS_DEFAULT!") DO ECHO ------------- %%A 			VAULE: %%B
-PAUSE
-	(ECHO LOWLATENCY=0) > "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO SOUNDDRIVER=0) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO TRACKERDEFAULTCOLOUR=24;34;51) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO TRACKERHIGHLIGHTCOLOUR1=54;64;81) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO TRACKERHIGHLIGHTCOLOUR2=64;84;101) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO TRACKERCURSORPREVIEWCOLOUR=64;64;192) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO TRACKERCURSORRECORDCOLOUR=128;64;64) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-	(ECHO TRACKERTABCOLOUR=64;64;96) >> "!TEMPFILEPREFIX!CONFIG.TXT"
-REM ) 
 
-FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO SET "%%A=%%B"
+:: End of default settings
 
+set "SETTINGS_DEFAULT="!SETTINGS_DEFAULT::=" "!""
+IF NOT EXIST "!TEMPFILEPREFIX!CONFIG.TXT" ( BREAK >"!TEMPFILEPREFIX!CONFIG.TXT" ) ELSE FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO SET "%%A=%%B"
+for %%i in (!SETTINGS_DEFAULT!) do IF NOT "%%~i"=="" FOR /F "delims== tokens=1,2" %%A IN ("%%~i") DO IF NOT DEFINED %%A (
+	SET "%%A=%%B"
+	(ECHO %%A=%%B) >> "!TEMPFILEPREFIX!CONFIG.TXT"
+)
+PAUSE >NUL
 echo ^<# : has been brought from https://stackoverflow.com/questions/41132764/detect-keystrokes-in-different-window-with-batch > "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo @echo off ^& setlocal >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo powershell -noprofile "iex (${%%~f0} | out-string)" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
@@ -751,4 +734,21 @@ SET CH12_STAT_CURRNOTE=___
 
 SET SETTINGSCOLOUR=93
 REM SET TRACKERCOLOR_TOGGLE=48
+GOTO :EOF
+
+:DRAW_LOGO_IN Y X
+echo [%~1;%~2H[90m________________\[93mSAEYAHN[90m/________________[0m
+
+echo [%~2G[90m^|                \     /                ^|[0m
+
+echo [%~2G^|____ _____ _____ \   / _____ _   _ _   ^|
+
+echo [%~2G    ^| ^|   ^| ^|      \ /  ^|   ^| ^|   ^| ^|\  ^|
+
+echo [%~2G    ^| ^|___^| ^|____   ^|   ^|___^| ^|___^| ^| \ ^|
+
+echo [%~2G    │ │   │ │       │   │   │ │   │ │  \│
+
+echo [%~2G[97m╙───┘ ┴   ┴ └────  ─┴─  ┴   ┴ ┴   ┴ ┴   ┴[0m
+
 GOTO :EOF
