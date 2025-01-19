@@ -4,13 +4,57 @@ SET "VERSIONINFO=DEV. VERSION"
 TITLE SaeyahnTracker !VERSIONINFO!	
 chcp 65001 >nul
 mode 120, 30 >nul
-echo [100;3H[90mSaeyahnTracker / 새얀트래커 Copyright 2024-2025 HeeminTV				Email: heeminwelcome1@gmail.com[0m
+GOTO SKIP01
+
+:LOADINGBAR 100 STRING
+SET /A TEMPVARI01=%~1 + 9
+ECHO [23;9H╔════════════════════════════════════════════════════════════════════════════════════════════════════╗[24;9H║[24;110H║[25;9H╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+FOR /L %%A IN (10,1,!TEMPVARI01!) DO ECHO [24;%%AH█
+
+CALL :STRLENFIT DISPLAYED_GLOBAL 40 "%~2"
+ECHO [22;11HSaeyahnTracker is now loading... %~1%%					!DISPLAYED_GLOBAL!
+GOTO :EOF
+
+:STRLENFIT
+set "STRLENFIT_TEMPVAR1=%1"
+set "STRLENFIT_TEMPVAR2=%2"
+shift
+shift
+
+set "STRLENFIT_TEMPVAR3="
+:STRLENFIT_combineArgs
+if "%~1"=="" goto :STRLENFIT_processString
+set "STRLENFIT_TEMPVAR3=!STRLENFIT_TEMPVAR3!%~1 "
+shift
+goto :STRLENFIT_combineArgs
+
+:STRLENFIT_processString
+set "STRLENFIT_TEMPVAR3=!STRLENFIT_TEMPVAR3:~0,-1!"
+for /l %%a in (0,1,64) do if not "!STRLENFIT_TEMPVAR3:~%%a,1!" == "" set /a STRLENFIT_TEMPVAR4+=1
+
+if !STRLENFIT_TEMPVAR4! gtr !STRLENFIT_TEMPVAR2! (
+	set "!STRLENFIT_TEMPVAR1!=!STRLENFIT_TEMPVAR3!
+) else (
+	set "!STRLENFIT_TEMPVAR1!=!STRLENFIT_TEMPVAR3!"
+    set /a STRLENFIT_TEMPVAR5=STRLENFIT_TEMPVAR2 - STRLENFIT_TEMPVAR4
+    for /l %%i in (1,1,!STRLENFIT_TEMPVAR5!) do set "!STRLENFIT_TEMPVAR1!=!%STRLENFIT_TEMPVAR1%! "
+)
+set "STRLENFIT_TEMPVAR1="
+set "STRLENFIT_TEMPVAR2="
+set "STRLENFIT_TEMPVAR3="
+set "STRLENFIT_TEMPVAR4="
+set "STRLENFIT_TEMPVAR5="
+GOTO :EOF
+
+:SKIP01
+CALL :LOADINGBAR 0 "Resetting variables..."
+echo [28;3H[90mSaeyahnTracker / 새얀트래커 Copyright 2024-2025 HeeminTV				Email: heeminwelcome1@gmail.com[0m
 
 CALL :DRAW_LOGO_IN 5 39
 set "TEMPFILEPREFIX=!APPDATA!\SaeyahnTracker\SaeyahnTracker_"
 IF NOT EXIST "!APPDATA!\SaeyahnTracker\" mkdir "!APPDATA!\SaeyahnTracker\"
 
-:: Enter the DEFAULT values ​​for the settings below
+:: Enter the FACTORY DEFAULT values ​​for the settings below
 :: - 
 :: Chunks of settings ​​are separated by `:` 
 :: and use new line scape characters (`^`) to make them more readable.
@@ -25,45 +69,58 @@ TRACKERCURSORPREVIEWCOLOUR=64;64;192:^
 TRACKERCURSORRECORDCOLOUR=128;64;64:^
 TRACKERTABCOLOUR=64;64;96:
 
-:: End of default settings
+:: End of factory default settings
 
-set "SETTINGS_DEFAULT="!SETTINGS_DEFAULT::=" "!""
+SET "SETTINGS_DEFAULT="!SETTINGS_DEFAULT::=" "!""
 IF NOT EXIST "!TEMPFILEPREFIX!CONFIG.TXT" ( BREAK >"!TEMPFILEPREFIX!CONFIG.TXT" ) ELSE FOR /F "delims== tokens=1,2" %%A IN ('TYPE !TEMPFILEPREFIX!CONFIG.TXT') DO SET "%%A=%%B"
 for %%i in (!SETTINGS_DEFAULT!) do IF NOT "%%~i"=="" FOR /F "delims== tokens=1,2" %%A IN ("%%~i") DO IF NOT DEFINED %%A (
 	SET "%%A=%%B"
 	(ECHO %%A=%%B) >> "!TEMPFILEPREFIX!CONFIG.TXT"
 )
-PAUSE >NUL
+SET "SETTINGS_DEFAULT="
+
+CALL :LOADINGBAR 20 "Generating playback script..."
 echo ^<# : has been brought from https://stackoverflow.com/questions/41132764/detect-keystrokes-in-different-window-with-batch > "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo @echo off ^& setlocal >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo powershell -noprofile "iex (${%%~f0} | out-string)" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo DEL /Q "!TEMPFILEPREFIX!%%~1.TMP" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+
+CALL :LOADINGBAR 30 "Generating playback script..."
 echo goto :EOF >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo : end #^> >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo # import GetAsyncKeyState(^) >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo Add-Type user32_dll @' >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+
+CALL :LOADINGBAR 40 "Generating playback script..."
 echo     [DllImport("user32.dll"^)] >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo     public static extern short GetAsyncKeyState(int vKey); >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo '@ -namespace System >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo Add-Type -As System.Windows.Forms >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+
+CALL :LOADINGBAR 50 "Generating playback script..."
 echo function keyPressed($key^) { return [user32_dll]::GetAsyncKeyState([Windows.Forms.Keys]::$key) -band 32768 } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo while ($true^) { >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo     $enterkey = keyPressed "Enter" >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo     if ($enterkey^) { break } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
+
+CALL :LOADINGBAR 60 "Generating playback script..."
 echo     start-sleep -milliseconds 30 >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo } >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 echo $Host.UI.RawUI.FlushInputBuffer^(^) >> "!TEMPFILEPREFIX!ENTERDETECT.BAT"
 
+CALL :LOADINGBAR 70 "Generating UNIX timestamper"
 echo WScript.Echo(new Date().getTime()); > "!TEMPFILEPREFIX!UNIXTIME.JS"
 
+CALL :LOADINGBAR 80 "Generating secondary playback script..."
 echo CreateObject("Wscript.Shell").Run "" ^& WScript.Arguments(0) ^& "", 0, False > "!TEMPFILEPREFIX!INVISIBLE.VBS"
 
-echo WScript.Sleep WScript.Arguments(0) > "!TEMPFILEPREFIX!SLEEP.VBS"
+CALL :LOADINGBAR 85 "Finalizing..."
 
 set TEMPVARI01=0
 set TEMPVARI02=0
 set TEMPVARI03=0
 
+CALL :LOADINGBAR 90 "Finalizing..."
 IF EXIST "ffmpeg.exe" ( set "TEMPVARI01=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffmpeg.exe" set "TEMPVARI01=1"
 IF EXIST "ffplay.exe" ( set "TEMPVARI02=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffplay.exe" set "TEMPVARI02=1"
 IF EXIST "ffprobe.exe" ( set "TEMPVARI03=1" ) else for %%P in (!PATH!) do IF EXIST "%%~P\ffprobe.exe" set "TEMPVARI03=1"
@@ -74,8 +131,9 @@ if "!TEMPVARI01!!TEMPVARI02!!TEMPVARI03!" NEQ "111" (
 	pause >nul
 	exit /b 55
 )
+CALL :LOADINGBAR 100 "Finalizing..."
 call :RESET_VARIABLES
-
+REM PAUSE
 :REFRESHALL
 CALL :GENERATEFRAME 1
 :DRAWLOGO 
@@ -114,7 +172,7 @@ IF !CURR_TAV! EQU 0 (
 SET /A DELAY=15000/BPM-100
 CLS
 COLOR 07 2>nul
-CALL :STRLENFIT DISPLAYED_SONGAUTHOR 27 "!SONGAUTHOR!"
+CALL :STRLENFIT DISPLAYED_GLOBAL 27 "!SONGAUTHOR!"
 CALL :STRLENFIT DISPLAYED_SONGNAME 27 "!SONGNAME!"
 echo [H[37m[48;2;8;8;64m┌[7m[F7][27m─ MAIN TAB ──────────────────────────────────────────────────────────────────────────────────────────────────────┐
 
@@ -124,7 +182,7 @@ echo ┌[7m[F3][27m─ SONG INFORMATION ────────────�
 
 echo │  [90m________________\[93mSAEYAHN[90m/________________[0m	[7m!B1![B]!B2![27m_BPM		: !BPM!	│[7m!B1![T]!B2![27m_SONG TITLE	: [4m!DISPLAYED_SONGNAME![24m │
 
-echo │  [90m^|                \     /                ^|[0m	[7m!B1![R]!B2![27m_ROWS	: !ROWS!	│[7m!B1![A]!B2![27m_AUTHOR	: [4m!DISPLAYED_SONGAUTHOR![24m │
+echo │  [90m^|                \     /                ^|[0m	[7m!B1![R]!B2![27m_ROWS	: !ROWS!	│[7m!B1![A]!B2![27m_AUTHOR	: [4m!DISPLAYED_GLOBAL![24m │
 
 echo │  ^|____ _____ _____ \   / _____ _   _ _   ^|	[7m!B1![H]!B2![27m_HIGHLIGHT	: !HIGHLIGHT!	│
 
@@ -468,37 +526,6 @@ IF !CURSOR_Y! GEQ !ROWS! (
 )
 
 GOTO DRAWTRACKER
-
-:STRLENFIT
-set "STRLENFIT_TEMPVAR1=%1"
-set "STRLENFIT_TEMPVAR2=%2"
-shift
-shift
-
-set "STRLENFIT_TEMPVAR3="
-:STRLENFIT_combineArgs
-if "%~1"=="" goto :STRLENFIT_processString
-set "STRLENFIT_TEMPVAR3=!STRLENFIT_TEMPVAR3!%~1 "
-shift
-goto :STRLENFIT_combineArgs
-
-:STRLENFIT_processString
-set "STRLENFIT_TEMPVAR3=!STRLENFIT_TEMPVAR3:~0,-1!"
-for /l %%a in (0,1,64) do if not "!STRLENFIT_TEMPVAR3:~%%a,1!" == "" set /a STRLENFIT_TEMPVAR4+=1
-
-if !STRLENFIT_TEMPVAR4! gtr !STRLENFIT_TEMPVAR2! (
-	set "!STRLENFIT_TEMPVAR1!=!STRLENFIT_TEMPVAR3!
-) else (
-	set "!STRLENFIT_TEMPVAR1!=!STRLENFIT_TEMPVAR3!"
-    set /a STRLENFIT_TEMPVAR5=STRLENFIT_TEMPVAR2 - STRLENFIT_TEMPVAR4
-    for /l %%i in (1,1,!STRLENFIT_TEMPVAR5!) do set "!STRLENFIT_TEMPVAR1!=!%STRLENFIT_TEMPVAR1%! "
-)
-set "STRLENFIT_TEMPVAR1="
-set "STRLENFIT_TEMPVAR2="
-set "STRLENFIT_TEMPVAR3="
-set "STRLENFIT_TEMPVAR4="
-set "STRLENFIT_TEMPVAR5="
-goto :eof
 
 :AVERAGEANSICOLOR VARINAME
 for /f "tokens=1,2,3 delims=;" %%a in ("!%~1!") do (
