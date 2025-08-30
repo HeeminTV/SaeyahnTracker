@@ -4,3 +4,4 @@ ignore
 *.raw
 *.wav
 *.exe
+test*
