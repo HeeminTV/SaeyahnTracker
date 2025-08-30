@@ -1,5 +1,5 @@
-.vs
 ignore
-*.bmp
-*.png
-commit.bat
+*.sym
+*.sm
+*.raw
+*.wav
