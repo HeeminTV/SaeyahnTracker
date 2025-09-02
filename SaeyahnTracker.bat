@@ -39,6 +39,7 @@ SET "WHILE=FOR /L %%Z IN (1 1 16) DO IF DEFINED DO.WHILE"
 SET "WHILE=SET DO.WHILE=1&!WHILE! !WHILE! !WHILE! !WHILE! !WHILE! "
 SET "BREAK=SET "DO.WHILE=""
 SET "KEYINPUT=powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)""
+SET "TIMESTAMP=((((^!TIME:~0,1^! * 10) + ^!TIME:~1,1^!) * 360000) + (((^!TIME:~3,1^! * 10) + ^!TIME:~4,1^!) * 6000) + (((^!TIME:~6,1^! * 10) + ^!TIME:~7,1^!) * 100) + (^!TIME:~9,1^! * 10) + ^!TIME:~10,1^!)"
 
 :: LOAD / CREATE CONFIGURATION ::
 REM -- COLOR, PATTERNS --
@@ -126,7 +127,6 @@ FOR /L %%A IN (1,1,6) DO (
 )
 
 :EDIT
-SET /A "ROWCURR=SYMODULE_ROWS - 6,TEMPVARI00=FRAME_COUNTER - 1"
 ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00![16;1H
 IF !CURSOR_ROWS! LSS 6 (
 	SET "DISPLAY_START=0"
@@ -281,11 +281,21 @@ SET "CURSOR_FRTAB=0"
 SET "CURSOR_SPTAB=-1"
 GOTO :EOF
 
+:: --------------------------------------------------------------------------------------------
+:: --------------------------------------------------------------------------------------------
+
+:: 								SONG PLAYBACK
+
+:: --------------------------------------------------------------------------------------------
+:: --------------------------------------------------------------------------------------------
+
 :PLAY PATH_OF_THIS_SCRIPT
 SET "CURSOR_ROWS=0"
+SET /A "BPMMS=1500 / SYMODULE_TEMPO"
 ECHO !SY_APPID! > "!SY_APPCONFIGPATH!\!SY_APPID!.stat"
 START /MIN powershell -c "iex ((Get-Content '%~1') -join [Environment]::Newline); iex 'main \"!SY_APPCONFIGPATH!\!SY_APPID!.stat\"'"
 TIMEOUT 0 >NUL
+SET /A "PREVDELAY=%TIMESTAMP%"
 %WHILE% (
 	SET /A "ROWCURR=SYMODULE_ROWS - 6,TEMPVARI00=FRAME_COUNTER - 1"
 	ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00![16;1H
@@ -319,16 +329,23 @@ TIMEOUT 0 >NUL
 !ROWCONTEXT:~48,3!:!ROWCONTEXT:~51,2!:!ROWCONTEXT:~53,1!:!ROWCONTEXT:~54,3!:!ROWCONTEXT:~57,3!│:│^
 !ROWCONTEXT:~60,3!:!ROWCONTEXT:~63,2!:!ROWCONTEXT:~65,1!:!ROWCONTEXT:~66,3!:!ROWCONTEXT:~69,3!│ [7m !ROWCURR!  [27m[119G│
 	)
-	SET /A "CURSOR_ROWS+=1"
-	IF !CURSOR_ROWS! EQU !SYMODULE_ROWS! (
-		SET /A "CURSOR_ROWS-=SYMODULE_ROWS"
-		CALL :MOVE_TO_FRAME "NEXT"
+	SET /A "TEMPVARI00=%TIMESTAMP% - PREVDELAY"
+	IF !TEMPVARI00! GEQ 1500 (
+		BREAK
+	) ELSE IF !TEMPVARI00! GEQ !BPMMS! (
+		IF NOT EXIST "!SY_APPCONFIGPATH!\!SY_APPID!.stat" %BREAK%
+		SET /A "CURSOR_ROWS+=TEMPVARI00 / BPMMS,PREVDELAY=%TIMESTAMP%"
+		IF !CURSOR_ROWS! GEQ !SYMODULE_ROWS! (
+			SET /A "CURSOR_ROWS-=SYMODULE_ROWS"
+			CALL :MOVE_TO_FRAME "NEXT"
+		)
+	) ELSE (
+		BREAK
 	)
-	IF NOT EXIST "!SY_APPCONFIGPATH!\!SY_APPID!.stat" %BREAK%
+	REM ECHO [1;1H!TEMPVARI00! !PREVDELAY!
 )
 TIMEOUT 1 >NUL
 GOTO :EOF
-
 
 :: --------------------------------------------------------------------------------------------
 :: --------------------------------------------------------------------------------------------
