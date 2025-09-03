@@ -39,7 +39,7 @@ SET "WHILE=FOR /L %%Z IN (1 1 16) DO IF DEFINED DO.WHILE"
 SET "WHILE=SET DO.WHILE=1&!WHILE! !WHILE! !WHILE! !WHILE! !WHILE! "
 SET "BREAK=SET "DO.WHILE=""
 SET "KEYINPUT=powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)""
-SET "TIMESTAMP=((((^!TIME:~0,1^! * 10) + ^!TIME:~1,1^!) * 360000) + (((^!TIME:~3,1^! * 10) + ^!TIME:~4,1^!) * 6000) + (((^!TIME:~6,1^! * 10) + ^!TIME:~7,1^!) * 100) + (^!TIME:~9,1^! * 10) + ^!TIME:~10,1^!)"
+SET "TIMESTAMP=((^!TIME:~0,2^! * 360000) + (((^!TIME:~3,1^! * 10) + ^!TIME:~4,1^!) * 6000) + (((^!TIME:~6,1^! * 10) + ^!TIME:~7,1^!) * 100) + (^!TIME:~9,1^! * 10) + ^!TIME:~10,1^!)"
 
 :: LOAD / CREATE CONFIGURATION ::
 REM -- COLOR, PATTERNS --
@@ -119,25 +119,27 @@ FOR /F "TOKENS=1,2,3 DELIMS=;" %%A IN ("!SYCONFIG_COLOR_CHTBG!;!SYCONFIG_COLOR_C
 	SET /A "TEMPVARI04=%%C / 2"
 )
 ECHO [13;1H[48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m┌[7m[F1][27m─ Tracker Section ─────────────────────────────────────────────┴───────────────────────────────────────────┬─────┤[14;1H├──[7m[\][27m_Patterns / Frames / Samples──┬─┬────────────────┬─┬────────────────┬─┬────────────────┬─┬────────────────┤ PAT │^
-[8;78H[48;2;!TEMPVARI00!;!TEMPVARI03!;!TEMPVARI04!m[2m┌─  !TEMPVARI02!────────────────────────────┤[9;69H[48;2;!SYCONFIG_COLOR_CHTBG!m[22m┌─  !TEMPVARI01!─────────────────────────────────────┤[16;115H----│ 
+[8;78H[48;2;!TEMPVARI00!;!TEMPVARI03!;!TEMPVARI04!m[2m┌─  !TEMPVARI02!────────────────────────────┤[9;69H[48;2;!SYCONFIG_COLOR_CHTBG!m[22m┌─  !TEMPVARI01!─────────────────────────────────────┤[16;115H----│
 
 FOR /L %%A IN (1,1,6) DO (
     SET /A "TEMPVARI01=((%%A - 1) * 19) + 1"
-    ECHO [15;!TEMPVARI01!H│ Channel %%A  ___ │:[16;!TEMPVARI01!H│----------------│-
+    ECHO [15;!TEMPVARI01!H│ Channel %%A      │:[16;!TEMPVARI01!H│----------------│-
 )
 
 :EDIT
-ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00![16;1H
+SET /A "TEMPVARI01=SYMODULE_ROWS - 6,TEMPVARI00=FRAME_COUNTER - 1"
+ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00!^
+[15;14H___[15;33H___[15;52H___[15;71H___[15;90H___[15;109H___[16;1H
+
 IF !CURSOR_ROWS! LSS 6 (
 	SET "DISPLAY_START=0"
-) ELSE IF !CURSOR_ROWS! GEQ !ROWCURR! (
+) ELSE IF !CURSOR_ROWS! GEQ !TEMPVARI01! (
 	SET /A "DISPLAY_START=SYMODULE_ROWS - 13"
 ) ELSE (
 	SET /A "DISPLAY_START=CURSOR_ROWS - 6"
 )
 SET /A "DISPLAY_END=DISPLAY_START + 12,ROWCURR=-1"
-SET "TEMPVARI00="
-FOR %%A IN (!SYMODULE_PAT%CURSOR_POINTED_FRAME%!) DO SET /A "ROWCURR+=1" & IF !ROWCURR! GEQ !DISPLAY_START! IF !ROWCURR! LEQ !DISPLAY_END! (
+FOR %%A IN (!SYMODULE_PAT%CURSOR_POINTED_FRAME%!) DO SET /A "ROWCURR+=1" & IF !ROWCURR! GEQ !DISPLAY_START! IF !ROWCURR! LEQ !DISPLAY_END! IF !ROWCURR! LSS !SYMODULE_ROWS! (
 	SET "ROWCONTEXT=%%A"
 	SET /A "TEMPVARI01=^!(ROWCURR %% SYMODULE_HIGHLIGHT) + ^!(ROWCURR %% (SYMODULE_HIGHLIGHT << 1)),TEMPVARI02=((CURSOR_X >> 3) * 12) + ((1 - ^!(ROWCURR - CURSOR_ROWS)) * 100),TEMPVARI03=CURSOR_X & 7"
 	IF !ROWCURR! EQU !CURSOR_ROWS! (
@@ -182,7 +184,7 @@ FOR %%A IN (!SYMODULE_PAT%CURSOR_POINTED_FRAME%!) DO SET /A "ROWCURR+=1" & IF !R
 		)
 	)
 	IF NOT "!TRACKER_MODE:~0,1!"=="0" SET "ROWLINE=[2m!ROWLINE!"
-	ECHO !ROWLINE![114G [7m !ROWCURR! [27m[119G│[0m
+	ECHO !ROWLINE![114G [7m !ROWCURR!  [27m[119G│[0m
 )
 
 %KEYINPUT%
@@ -297,17 +299,17 @@ START /MIN powershell -c "iex ((Get-Content '%~1') -join [Environment]::Newline)
 TIMEOUT 0 >NUL
 SET /A "PREVDELAY=%TIMESTAMP%"
 %WHILE% (
-	SET /A "ROWCURR=SYMODULE_ROWS - 6,TEMPVARI00=FRAME_COUNTER - 1"
+	SET /A "TEMPVARI01=SYMODULE_ROWS - 6,TEMPVARI00=FRAME_COUNTER - 1"
 	ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00![16;1H
 	IF !CURSOR_ROWS! LSS 6 (
 		SET "DISPLAY_START=0"
-	) ELSE IF !CURSOR_ROWS! GEQ !ROWCURR! (
+	) ELSE IF !CURSOR_ROWS! GEQ !TEMPVARI01! (
 		SET /A "DISPLAY_START=SYMODULE_ROWS - 13"
 	) ELSE (
 		SET /A "DISPLAY_START=CURSOR_ROWS - 6"
 	)
 	SET /A "DISPLAY_END=DISPLAY_START + 12,ROWCURR=-1"
-	FOR /F "TOKENS=*" %%A IN ("!CURSOR_POINTED_FRAME!") DO FOR %%B IN (!SYMODULE_PAT%%A!) DO SET /A "ROWCURR+=1" & IF !ROWCURR! GEQ !DISPLAY_START! IF !ROWCURR! LEQ !DISPLAY_END! (
+	FOR /F "TOKENS=*" %%A IN ("!CURSOR_POINTED_FRAME!") DO FOR %%B IN (!SYMODULE_PAT%%A!) DO SET /A "ROWCURR+=1" & IF !ROWCURR! GEQ !DISPLAY_START! IF !ROWCURR! LEQ !DISPLAY_END! IF !ROWCURR! LSS !SYMODULE_ROWS! (
 		SET "ROWCONTEXT=%%B"
 		SET /A "TEMPVARI01=^!(ROWCURR %% SYMODULE_HIGHLIGHT) + ^!(ROWCURR %% (SYMODULE_HIGHLIGHT << 1))"
 		IF !ROWCURR! EQU !CURSOR_ROWS! (
@@ -342,7 +344,6 @@ SET /A "PREVDELAY=%TIMESTAMP%"
 	) ELSE (
 		BREAK
 	)
-	REM ECHO [1;1H!TEMPVARI00! !PREVDELAY!
 )
 TIMEOUT 1 >NUL
 GOTO :EOF
@@ -351,6 +352,7 @@ GOTO :EOF
 :: --------------------------------------------------------------------------------------------
 
 :: 								FRAME MANAGEMENT
+
 
 :: --------------------------------------------------------------------------------------------
 :: --------------------------------------------------------------------------------------------
@@ -441,18 +443,18 @@ SET "TEMPVARI04=0"
 FOR %%A IN (!SYMODULE_FRAME!) DO (
 	SET /A "TEMPVARI02=((CURSOR_FRAME >> 4) * ^!(FRAME_COUNTER >> 5)) * 16,TEMPVARI00=((TEMPVARI04 & 15) * 3) + 71"
 	IF %%A LSS 10 (
-		SET "TEMPVARI04=0%%A"
+		SET "TEMPVARI05=0%%A"
 	) ELSE (
-		SET "TEMPVARI04=%%A"
+		SET "TEMPVARI05=%%A"
 	)
-	IF !TEMPVARI04! GEQ !TEMPVARI02! IF !TEMPVARI03! LSS 32 (
+	IF %%A GEQ !TEMPVARI02! IF !TEMPVARI03! LSS 32 (
 		IF !TEMPVARI03! LSS 16 (
 			SET "TEMPVARI01=[10"
 		) ELSE (
 			SET "TEMPVARI01=[11"
 		)
 		IF !TEMPVARI04! EQU !CURSOR_FRAME! SET "TEMPVARI01=[7m!TEMPVARI01!"
-		ECHO [!TEMPVARI01!;!TEMPVARI00!H[48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m!TEMPVARI04![0m
+		ECHO [!TEMPVARI01!;!TEMPVARI00!H[48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m!TEMPVARI05![0m
 		SET /A "TEMPVARI03+=1"
 	)
 	
@@ -530,6 +532,14 @@ SET /A "TEMPVARI00=%~1 + 7,TEMPVARI01=%~2 + 7"
 ECHO [!TEMPVARI01!;!TEMPVARI00!HTracker Version !SY_VERSION!
 GOTO :EOF
 
+:: --------------------------------------------------------------------------------------------
+:: --------------------------------------------------------------------------------------------
+
+:: 								FILE SYSTEM
+
+:: --------------------------------------------------------------------------------------------
+:: --------------------------------------------------------------------------------------------
+
 REM 00
 :SAVE_CONFIG
 ECHO ; SaeyahnTracker configuration file > "!SY_APPCONFIGPATH!\config.txt"
@@ -539,14 +549,35 @@ FOR /F "TOKENS=*" %%A IN ('SET SYCONFIG') DO (
 )
 GOTO :EOF
 
+:: --------------------------------------------------------------------------------------------
+:: --------------------------------------------------------------------------------------------
+
+:: 								GUI BOX
+
+:: --------------------------------------------------------------------------------------------
+:: --------------------------------------------------------------------------------------------
+
 REM 00 01
 :MSGBOX CONTEXT TYPE BUTTON
 SET "TEMPVARI01=!TEMP!\!RANDOM!.VBS"
 ECHO WScript.Quit MsgBox("%~1",%~3 + %~2,"!SY_APPNAME!") > "!TEMPVARI01!"
-WSCRIPT "!TEMPVARI01!"
+CSCRIPT //NOLOGO "!TEMPVARI01!"
 SET "TEMPVARI00=!ERRORLEVEL!"
 DEL /Q "TEMPVARI01" 2>NUL >NUL
 GOTO :EOF
+
+REM 00 01
+:INPUTBOX CONTEXT DEFAULT
+SET "TEMPVARI01=!TEMP!\!RANDOM!.VBS"
+ECHO WScript.Echo InputBox("%~1", "!SY_APPNAME!", %~2) > "!TEMPVARI01!"
+FOR /F %%A IN ('CSCRIPT //NOLOGO "!TEMPVARI01!"') DO IF "%%A"=="" (
+	SET "TEMPVARI01=%~2"
+) ELSE (
+	SET "TEMPVARI01=%%A"
+)
+DEL /Q "TEMPVARI01" 2>NUL >NUL
+GOTO :EOF
+
 #>
 # POWERSHELL SECTION
 function main
