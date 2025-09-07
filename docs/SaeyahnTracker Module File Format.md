@@ -17,10 +17,8 @@ Undefined bytes should be filled with `0x00`.
 |:---:|:---:|:---:|:-----:|--------|--------|
 |`char[]`|`0x0000`|4|*None*|Magic number|Is always `SYTM`, `0x53 0x59 0x54 0x4D`|
 |`unsigned short`|`0x0004`|2|`SY_MODULE_FORMAT_VER`|Module format version|*None*|
-|`unsigned char`|`0x0006`|1|`SYMODULE_ROWS`|The amount of the rows of the module|*None*|
-|`unsigned char`|`0x0007`|1|`SYMODULE_TEMPO`|The tempo of the module|*None*|
-|`unsigned short`|`0x0008`|2|`SYMODULE_HIGHLIGHT`|The length of `SYMODULE_FRAME`, The highlight position of the module|`LLLL LLLL LHHH HHH`, L = The length of `SYMODULE_FRAME`; H = The highlight position of the module|
-|`unsigned char`|`0x000A`|1|`SAMPLE_COUNTER`|The amount of the samples that the module contains|*None*|
+|`unsigned short`|`0x0006`|2|`SYMODULE_ROWS`, `SYMODULE_TEMPO`|The amount of the rows of the module, The tempo of the module|`RRRR RRRT TTTT TTTT`, R = The amount of the rows of the module, T = The tempo of the module|
+|`unsigned short`|`0x0009`|2|*None*, `SYMODULE_HIGHLIGHT`|The length of `SYMODULE_FRAME`, The highlight position of the module|`LLLL LLLL LHHH HHH`, L = The length of `SYMODULE_FRAME`; H = The highlight position of the module|
 |`char[]`|`0x0010`|32|`SYMODULE_SONGTITLE`|The title of the module|*None*|
 |`char[]`|`0x0030`|32|`SYMODULE_SONGAUTHOR`|The author of the module|*None*|
 |`char[]`|`0x0050`|*Varies*|`SYMODULE_FRAME`|Frames|The length of the string is set by the header value described above|

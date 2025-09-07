@@ -64,6 +64,7 @@ SET "BREAK1=SET "DO.WHILE1=""
 
 SET "KEYINPUT=powershell "exit($Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown').VirtualKeyCode)""
 SET "TIMESTAMP=((^!TIME:~0,2^! * 360000) + (((^!TIME:~3,1^! * 10) + ^!TIME:~4,1^!) * 6000) + (((^!TIME:~6,1^! * 10) + ^!TIME:~7,1^!) * 100) + (^!TIME:~9,1^! * 10) + ^!TIME:~10,1^!)"
+
 :: --------------------------------------------------------------------------------------------
 :: --------------------------------------------------------------------------------------------
 
@@ -118,6 +119,7 @@ REM ELSE (
 	REM CALL :R_MSGBOX "Couldn't load the file from the first argument!" 16 0
 	REM EXIT /B 1
 REM )
+
 ECHO [2J[0m
 
 :: Should be jumped to DRAW_ALL when one of these happens:
@@ -162,7 +164,7 @@ IF !TRACKER_MODE! EQU 2 (
 	SET "TEMPVARI02=Samples  "
 )
 ECHO [3;1H[48;2;!SYCONFIG_COLOR_SITAB!m[38;2;!SYCONFIG_COLOR_SITXT!m┌[7m[F3][27m─ Song Information ──────────────────────────────────────────────────────────────────────────────────────────────┐^
-[12;1H└──  You are in [5m!TEMPVARI00!──────────────────────────────────[4;48H[7m[B][27m_BPM        : !SYMODULE_TEMPO![5;48H[7m[R][27m_Rows       : !SYMODULE_ROWS![6;48H[7m[H][27m_Highlight  : !SYMODULE_HIGHLIGHT![7;48H[7m[S][27m_Edit Step  : !EDITSTEP![4;72H[7m[S][27m_Song Title :[5;72H[7m[S][27m_Song Author:[4m[4;89H                             [5;89H                             [4;89H!SYMODULE_SONGTITLE![5;89H!SYMODULE_SONGAUTHOR![24m[10;1H│[11;1H│ 
+[12;1H└──  You are in [5m!TEMPVARI00!──────────────────────────────────[4;48H[7m[B][27m_BPM        : !SYMODULE_TEMPO!   [5;48H[7m[R][27m_Rows       : !SYMODULE_ROWS!   [6;48H[7m[H][27m_Highlight  : !SYMODULE_HIGHLIGHT!   [7;48H[7m[S][27m_Edit Step  : !EDITSTEP!   [4;72H[7m[T][27m_Song Title :[5;72H[7m[A][27m_Song Author:[4m[4;89H                             [5;89H                             [4;89H!SYMODULE_SONGTITLE![5;89H!SYMODULE_SONGAUTHOR![24m[10;1H│[11;1H│ 
 
 FOR /L %%A IN (4,1,9) DO ECHO [%%A;1H│[%%A;119H│ 
 FOR /F "TOKENS=1,2,3 DELIMS=;" %%A IN ("!SYCONFIG_COLOR_CHTBG!;!SYCONFIG_COLOR_CTTXT!") DO (
@@ -198,7 +200,7 @@ IF !CURSOR_ROWS! GEQ !SYMODULE_ROWS! (
 IF !CURSOR_ROWS! LSS 0 SET "CURSOR_ROWS=0"
 IF !CURSOR_ROWS! GEQ !SYMODULE_ROWS! SET /A "CURSOR_ROWS=SYMODULE_ROWS - 1"
 
-SET /A "TEMPVARI01=SYMODULE_ROWS - 6,TEMPVARI00=FRAME_COUNTER - 1,OCTAVE&=7"
+SET /A "TEMPVARI00=FRAME_COUNTER - 1,TEMPVARI01=SYMODULE_ROWS - 6,OCTAVE&=7"
 ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00!^
 [15;14H___[15;33H___[15;52H___[15;71H___[15;90H___[15;109H___[16;1H
 
@@ -209,11 +211,12 @@ IF !CURSOR_ROWS! LSS 6 (
 ) ELSE (
 	SET /A "DISPLAY_START=CURSOR_ROWS - 6"
 )
-SET /A "DISPLAY_END=DISPLAY_START + 12,ROWCURR=-1"
-FOR %%A IN (!SYMODULE_PAT%CURSOR_POINTED_FRAME%!) DO SET /A "ROWCURR+=1" & (%EDIT_MACRO%) & IF !ROWCURR! GEQ !DISPLAY_START! IF !ROWCURR! LEQ !DISPLAY_END! (
+SET /A "DISPLAY_END=DISPLAY_START + 12,ROWCURR=-1,TEMPVARI04=16"
+FOR %%A IN (!SYMODULE_PAT%CURSOR_POINTED_FRAME%!) DO SET /A "ROWCURR+=1" & IF !ROWCURR! GEQ !DISPLAY_START! IF !ROWCURR! LEQ !DISPLAY_END! (
 	SET "ROWCONTEXT=%%A"
-	SET /A "TEMPVARI01=^!(ROWCURR %% SYMODULE_HIGHLIGHT) + ^!(ROWCURR %% (SYMODULE_HIGHLIGHT << 1)),TEMPVARI02=(CURSOR_X / 7) * 12,TEMPVARI03=CURSOR_X - ((CURSOR_X / 7) * 7)"
+	SET /A "TEMPVARI01=^!(ROWCURR %% SYMODULE_HIGHLIGHT) + ^!(ROWCURR %% (SYMODULE_HIGHLIGHT << 1)),TEMPVARI02=(CURSOR_X / 7) * 12,TEMPVARI03=CURSOR_X - ((CURSOR_X / 7) * 7),TEMPVARI04+=1"
 	IF !ROWCURR! EQU !CURSOR_ROWS! (
+		SET "CURSOR_LINE=!TEMPVARI04!"
 		IF !CURSOR_MODE! EQU 1 (
 			SET "ROWCOLOR=[48;2;!SYCONFIG_COLOR_CURRC!m[38;2;!SYCONFIG_COLOR_PDTXT!m"
 		) ELSE (
@@ -266,6 +269,12 @@ IF !ERRORLEVEL! GEQ 112 IF !ERRORLEVEL! LEQ 118 (
 )
 REM -- PATTERN EDITOR
 IF !TRACKER_MODE! EQU 0 (
+	IF !ERRORLEVEL! EQU 220 (
+		SET "CURSOR_FRTAB=0"
+		SET "TRACKER_MODE=1"
+		GOTO DRAW_TRACKER
+	)
+
 	IF !ERRORLEVEL! EQU 38 SET /A "CURSOR_ROWS-=EDITSTEP"
 	IF !ERRORLEVEL! EQU 40 SET /A "CURSOR_ROWS+=EDITSTEP"
 	IF !ERRORLEVEL! EQU 36 SET "CURSOR_ROWS=0"
@@ -282,12 +291,6 @@ IF !TRACKER_MODE! EQU 0 (
 
 	IF !ERRORLEVEL! EQU 32 SET /A "CURSOR_MODE=^!CURSOR_MODE"
 	IF !ERRORLEVEL! EQU 13 CALL :PLAY "%~0"
-
-	IF !ERRORLEVEL! EQU 220 (
-		SET "CURSOR_FRTAB=0"
-		SET "TRACKER_MODE=1"
-		GOTO DRAW_TRACKER
-	)
 	
 	REM -- EDITING
 	IF !CURSOR_MODE! EQU 1 (
@@ -332,7 +335,33 @@ IF !TRACKER_MODE! EQU 0 (
 			IF !ERRORLEVEL! EQU 219 SET "EDIT_BUFFER=3F-2"
 			IF !ERRORLEVEL! EQU 221 SET "EDIT_BUFFER=3G-2"
 			
-			IF !SAMPLE_COUNTER! NEQ 0 IF !CURSOR_SAMPLE! LSS 10 ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!0!CURSOR_SAMPLE!" ) ELSE ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!!CURSOR_SAMPLE!" )	
+			IF !ERRORLEVEL! EQU 46 SET "EDIT_BUFFER=5_____"
+			
+			IF "!EDIT_BUFFER:~0,1!"=="3" IF !SAMPLE_COUNTER! NEQ 0 IF !CURSOR_SAMPLE! LSS 10 ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!0!CURSOR_SAMPLE!" ) ELSE ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!!CURSOR_SAMPLE!" )
+			
+		REM -- SAMPLE
+		) ELSE IF !TEMPVARI03! EQU 1 (
+			IF !ERRORLEVEL! LEQ 57 IF !ERRORLEVEL! GEQ 48 (
+				SET /A "TEMPVARI00=((CURSOR_X / 7) * 19) + 6,TEMPVARI01=!ERRORLEVEL! - 48" 
+				CALL :R_INSERT_NUMBER !TEMPVARI00! !CURSOR_LINE! !TEMPVARI01! 1 1
+				SET "EDIT_BUFFER=2!TEMPVARI00!"
+			) ELSE IF !ERRORLEVEL! EQU 46 ( SET "EDIT_BUFFER=2__" )
+			
+		REM -- VOLUME
+		) ELSE IF !TEMPVARI03! EQU 2 (
+			IF !ERRORLEVEL! GEQ 48 IF !ERRORLEVEL! LEQ 57 SET /A "EDIT_BUFFER=10 + (!ERRORLEVEL! - 48)"
+			IF !ERRORLEVEL! EQU 65 SET "EDIT_BUFFER=1A"
+			IF !ERRORLEVEL! EQU 66 SET "EDIT_BUFFER=1B"
+			IF !ERRORLEVEL! EQU 67 SET "EDIT_BUFFER=1C"
+			IF !ERRORLEVEL! EQU 68 SET "EDIT_BUFFER=1D"
+			IF !ERRORLEVEL! EQU 69 SET "EDIT_BUFFER=1E"
+			IF !ERRORLEVEL! EQU 70 SET "EDIT_BUFFER=1F"
+			
+			IF !ERRORLEVEL! EQU 46 SET "EDIT_BUFFER=1_"
+			
+		REM -- EFFECT 1, TYPE
+		) ELSE IF !TEMPVARI03! EQU 3 (
+			BREAK
 		)
 		
 		IF DEFINED EDIT_BUFFER CALL :EDIT_PATTERN
@@ -373,7 +402,7 @@ REM -- FRAME EDITOR
 			REM -- SET
 			) ELSE IF !CURSOR_FRTAB! EQU 2 (
 				CALL :DRAW_FRAME_EDITOR
-				CALL :R_INSERT_NUMBER !TEMPVARI00! !TEMPVARI01! !CURSOR_POINTED_FRAME!
+				CALL :R_INSERT_NUMBER !TEMPVARI00! !TEMPVARI01! !CURSOR_POINTED_FRAME! 0 0
 				IF NOT DEFINED SYMODULE_PAT!TEMPVARI00! CALL :MAKE_BLANK_PATTERN !TEMPVARI00!
 				CALL :MODIFY_FRAME !CURSOR_FRAME! !TEMPVARI00!
 				CALL :DELETE_UNUSED_PATTERN
@@ -381,7 +410,7 @@ REM -- FRAME EDITOR
 			) ELSE IF !CURSOR_FRTAB! EQU 3 (
 				%WHILE0% (
 					CALL :MOVE_TO_FRAME "POINTER_UPDATE"
-					CALL :R_INSERT_NUMBER !TEMPVARI00! !TEMPVARI01! !CURSOR_POINTED_FRAME!
+					CALL :R_INSERT_NUMBER !TEMPVARI00! !TEMPVARI01! !CURSOR_POINTED_FRAME! 0 0
 					IF !ERRORLEVEL! EQU 0 (
 						IF NOT DEFINED SYMODULE_PAT!TEMPVARI00! CALL :MAKE_BLANK_PATTERN !TEMPVARI00!
 						CALL :MODIFY_FRAME !CURSOR_FRAME! !TEMPVARI00!
@@ -415,6 +444,45 @@ REM -- SAMPLE EDITOR
 		SET "TRACKER_MODE=0"
 		GOTO DRAW_TRACKER
 	)
+	
+REM -- SONG INFORMATIONS
+) ELSE IF !TRACKER_MODE! EQU 3 (
+	IF !ERRORLEVEL! EQU 66 (
+		CALL :R_NUMBERBOX 1 511 !SYMODULE_TEMPO!
+		SET "SYMODULE_TEMPO=!TEMPVARI00!
+		GOTO DRAW_TRACKER
+	)
+	
+	IF !ERRORLEVEL! EQU 82 (
+		CALL :R_NUMBERBOX 1 112 !SYMODULE_ROWS!
+		CALL :SET_ROWS !TEMPVARI00!
+		GOTO DRAW_TRACKER
+	)
+	
+	IF !ERRORLEVEL! EQU 72 (
+		CALL :R_NUMBERBOX 1 112 !SYMODULE_HIGHLIGHT!
+		SET "SYMODULE_HIGHLIGHT=!TEMPVARI00!"
+		GOTO DRAW_TRACKER
+	)
+	
+	IF !ERRORLEVEL! EQU 83 (
+		CALL :R_NUMBERBOX 1 112 !EDITSTEP!
+		SET "EDITSTEP=!TEMPVARI00!
+		GOTO DRAW_TRACKER
+	)
+	
+	IF !ERRORLEVEL! EQU 84 (
+		CALL :R_INPUTBOX "!SYMODULE_SONGTITLE!"
+		SET "SYMODULE_SONGTITLE=!TEMPVARI00:~0,32!"
+		GOTO DRAW_TRACKER
+	)
+	
+	IF !ERRORLEVEL! EQU 65 (
+		CALL :R_INPUTBOX "!SYMODULE_SONGAUTHOR!"
+		SET "SYMODULE_SONGAUTHOR=!TEMPVARI00:~0,32!"
+		GOTO DRAW_TRACKER
+	)
+		
 )
 GOTO EDIT
 
@@ -425,7 +493,7 @@ SET "SYMODULE_TEMPO=150"
 SET "SYMODULE_HIGHLIGHT=4"
 SET "SYMODULE_FRAME=0;"
 SET "SYMODULE_SONGTITLE=New song"
-SET "SYMODULE_SONGAUTHOR=Jack"
+SET "SYMODULE_SONGAUTHOR="
 
 SET "SAMPLE_COUNTER=0"
 SET "FRAME_COUNTER=0"
@@ -683,9 +751,11 @@ SET "TEMPVARI02=!SYMODULE_ROWS!"
 SET "SYMODULE_ROWS=%~1"
 IF "%~1"=="!TEMPVARI02!" GOTO :EOF
 CALL :MAKE_BLANK_PATTERN 128
+FOR /L %%A IN (17, 1, 29) DO ECHO [0m[%%A;1H                                                                                                                        [0m
 SET "BLANKTABLE=!SYMODULE_PAT128!"
 SET "SYMODULE_PAT128="
-FOR /L %%A IN (0, 1, 99) DO IF DEFINED "SYMODULE_PAT%%A" (
+SET "CURSOR_ROWS=0"
+FOR /L %%A IN (0, 1, 99) DO IF DEFINED SYMODULE_PAT%%A (
 	IF %~1 LSS !TEMPVARI02! (
 		SET "TEMPVARI00=0"
 		SET "TEMPVARI01="
@@ -788,8 +858,8 @@ DEL /Q "!TEMPVARI01!" 2>NUL >NUL
 GOTO :EOF
 
 REM 00 01 02 03 04 05
-:R_INSERT_NUMBER X Y DEAFULT
-SET "TEMPVARI01=0"
+:R_INSERT_NUMBER X Y DEAFULT POS TWO_DIGITS?
+SET "TEMPVARI01=%~4"
 IF %~3 LSS 10 (
 	SET "TEMPVARI03=0%~3"
 ) ELSE (
@@ -814,7 +884,7 @@ IF %~3 LSS 10 (
 	) ELSE ( SET "TEMPVARI01=2" )
 	
 	IF !TEMPVARI01! EQU 2 (
-		IF "!TEMPVARI03:~0,1!"=="0" (
+		IF "!TEMPVARI03:~0,1!%~5"=="00" (
 			SET "TEMPVARI00=!TEMPVARI03:~1,1!"
 		) ELSE (
 			SET "TEMPVARI00=!TEMPVARI03!"
@@ -824,8 +894,20 @@ IF %~3 LSS 10 (
 )
 EXIT /B !TEMPVARI05!
 
+REM 00
+:R_INPUTBOX
+FOR /F "DELIMS=" %%A IN ('powershell -command "Add-Type -AssemblyName System.Windows.Forms;Add-Type -AssemblyName System.Drawing;$form = New-Object System.Windows.Forms.Form;$form.Text = \"!SY_APPNAME!\";$form.Size = New-Object System.Drawing.Size(240, 140);$form.StartPosition = \"CenterScreen\";$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog;$form.MaximizeBox = $false;$form.MinimizeBox = $false;$label = New-Object System.Windows.Forms.Label;$label.Location = New-Object System.Drawing.Point(10, 10);$label.Size = New-Object System.Drawing.Size(200, 20);$label.Text = \"Text :\";$form.Controls.Add($label);$textBox = New-Object System.Windows.Forms.TextBox;$textBox.Location = New-Object System.Drawing.Point(10, 35);$textBox.Size = New-Object System.Drawing.Size(200, 20);$form.Controls.Add($textBox);$okButton = New-Object System.Windows.Forms.Button;$okButton.Location = New-Object System.Drawing.Point(55, 65);$okButton.Size = New-Object System.Drawing.Size(75, 25);$okButton.Text = \"Confirm\";$okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK;$form.AcceptButton = $okButton;$form.Controls.Add($okButton);$cancelButton = New-Object System.Windows.Forms.Button;$cancelButton.Location = New-Object System.Drawing.Point(135, 65);$cancelButton.Size = New-Object System.Drawing.Size(75, 25);$cancelButton.Text = \"Cancel\";$cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel;$form.CancelButton = $cancelButton;$form.Controls.Add($cancelButton);if ($form.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host $textBox.Text } else { Write-Host \"%~1\" }"') DO SET "TEMPVARI00=%%A"
+GOTO :EOF
+
+REM 00
+:R_NUMBERBOX MIN MAX DEFAULT
+powershell -command "Add-Type -AssemblyName System.Windows.Forms;Add-Type -AssemblyName System.Drawing;$form = New-Object System.Windows.Forms.Form;$form.Text = \"!SY_APPNAME!\";$form.Size = New-Object System.Drawing.Size(220, 150);$form.StartPosition = \"CenterScreen\";$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog;$form.MaximizeBox = $false;$form.MinimizeBox = $false;;$numberBox = New-Object System.Windows.Forms.NumericUpDown;$numberBox.Location = New-Object System.Drawing.Point(50, 20);$numberBox.Size = New-Object System.Drawing.Size(100, 25);$numberBox.Minimum = %~1;$numberBox.Maximum = %~2;$numberBox.Value = %~3;$form.Controls.Add($numberBox);$okButton = New-Object System.Windows.Forms.Button;$okButton.Location = New-Object System.Drawing.Point(20, 70);$okButton.Size = New-Object System.Drawing.Size(75, 25);$okButton.Text = \"Confirm\";$okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK;$form.AcceptButton = $okButton;$form.Controls.Add($okButton);$cancelButton = New-Object System.Windows.Forms.Button;$cancelButton.Location = New-Object System.Drawing.Point(105, 70);$cancelButton.Size = New-Object System.Drawing.Size(75, 25);$cancelButton.Text = \"Cancel\";$cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel;$form.CancelButton = $cancelButton;$form.Controls.Add($cancelButton);$result = $form.ShowDialog();if ($result -eq [System.Windows.Forms.DialogResult]::OK) { exit [int]$numberBox.Value } else { exit %~3 }"
+SET "TEMPVARI00=!ERRORLEVEL!"
+GOTO :EOF
+
+REM 00
 :FILE_DIALOG Load/Save FILTERS
-FOR /F "DELIMS=" %%A in ('powershell -command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null; $f = New-Object System.Windows.Forms.%~1FileDialog; $f.Filter = '%~2'; $f.Multiselect = $false; if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host $f.FileName } else { Write-Host 'NONE' }"') DO SET "TEMPVARI00=%%A"
+FOR /F "DELIMS=" %%A IN ('powershell -command "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null; $f = New-Object System.Windows.Forms.%~1FileDialog; $f.Filter = '%~2'; $f.Multiselect = $false; if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Host $f.FileName } else { Write-Host '0' }"') DO SET "TEMPVARI00=%%A"
 GOTO :EOF
 
 #>
