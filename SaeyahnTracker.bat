@@ -126,6 +126,8 @@ ECHO [2J[0m
 REM -- Song information has changed
 REM -- New song loaded
 :DRAW_ALL
+IF "!SY_CURRMODULE!"=="" ( TITLE !SY_APPNAME! !SY_VERSION! ) ELSE ( TITLE !SY_APPNAME! !SY_VERSION! - !SY_CURRMODULE~nx! )
+
 CALL :MOVE_TO_FRAME "POINTER_UPDATE"
 
 FOR /F "TOKENS=1,2,3 DELIMS=;" %%A IN ("!SYCONFIG_COLOR_LBASE!") DO (
@@ -172,12 +174,12 @@ FOR /F "TOKENS=1,2,3 DELIMS=;" %%A IN ("!SYCONFIG_COLOR_CHTBG!;!SYCONFIG_COLOR_C
 	SET /A "TEMPVARI03=%%B / 2"
 	SET /A "TEMPVARI04=%%C / 2"
 )
-ECHO [13;1H[48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m┌[7m[F1][27m─ Tracker Section ─────────────────────────────────────────────┴───────────────────────────────────────────┬─────┤[14;1H├──[7m[\][27m_Patterns / Frames / Samples──┬─┬────────────────┬─┬────────────────┬─┬────────────────┬─┬────────────────┤ PAT │^
+ECHO [13;1H[48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m┌[7m[F1][27m─ Tracker Section ─────────────────────────────────────────────┴───────────────────────────────────────────┬─────┤[14;1H├──[7m[\][27m_Patterns / Frames / Samples──┬─┬────────────────┬─┬────────────────┬─┬────────────────┬[7m[-][27m_Octave X_[7m[+][27m──┤ PAT │^
 [8;78H[48;2;!TEMPVARI00!;!TEMPVARI03!;!TEMPVARI04!m[2m┌─  !TEMPVARI02!────────────────────────────┤[9;69H[48;2;!SYCONFIG_COLOR_CHTBG!m[22m┌─  !TEMPVARI01!─────────────────────────────────────┤[16;115H----│
 
 FOR /L %%A IN (1,1,6) DO (
     SET /A "TEMPVARI01=((%%A - 1) * 19) + 1"
-    ECHO [15;!TEMPVARI01!H│ Channel %%A      │:[16;!TEMPVARI01!H│----------------│-
+    ECHO [15;!TEMPVARI01!H│ Channel %%A  XXX │:[16;!TEMPVARI01!H│----------------│-
 )
 
 :: --------------------------------------------------------------------------------------------
@@ -202,7 +204,9 @@ IF !CURSOR_ROWS! GEQ !SYMODULE_ROWS! SET /A "CURSOR_ROWS=SYMODULE_ROWS - 1"
 
 SET /A "TEMPVARI00=FRAME_COUNTER - 1,TEMPVARI01=SYMODULE_ROWS - 6,OCTAVE&=7"
 ECHO [48;2;!SYCONFIG_COLOR_CHTBG!m[38;2;!SYCONFIG_COLOR_CTTXT!m[15;116H   │[15;114H!CURSOR_FRAME!/!TEMPVARI00!^
-[15;14H___[15;33H___[15;52H___[15;71H___[15;90H___[15;109H___[16;1H
+[15;14H___[15;33H___[15;52H___[15;71H___[15;90H___[15;109H___^
+[14;106H!OCTAVE!^
+[16;1H
 
 IF !CURSOR_ROWS! LSS 6 (
 	SET "DISPLAY_START=0"
@@ -288,6 +292,9 @@ IF !TRACKER_MODE! EQU 0 (
 
 	IF !CURSOR_X! LSS 0 SET /A "CURSOR_X+=42"
 	IF !CURSOR_X! GEQ 42 SET /A "CURSOR_X-=42"
+	
+	IF !ERRORLEVEL! EQU 189 SET /A "OCTAVE-=1"
+	IF !ERRORLEVEL! EQU 187 SET /A "OCTAVE+=1"
 
 	IF !ERRORLEVEL! EQU 32 SET /A "CURSOR_MODE=^!CURSOR_MODE"
 	IF !ERRORLEVEL! EQU 13 CALL :PLAY "%~0"
@@ -335,17 +342,22 @@ IF !TRACKER_MODE! EQU 0 (
 			IF !ERRORLEVEL! EQU 219 SET "EDIT_BUFFER=3F-2"
 			IF !ERRORLEVEL! EQU 221 SET "EDIT_BUFFER=3G-2"
 			
-			IF !ERRORLEVEL! EQU 46 SET "EDIT_BUFFER=5_____"
+			IF !ERRORLEVEL! EQU 46 SET "EDIT_BUFFER=C____________"
 			
-			IF "!EDIT_BUFFER:~0,1!"=="3" IF !SAMPLE_COUNTER! NEQ 0 IF !CURSOR_SAMPLE! LSS 10 ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!0!CURSOR_SAMPLE!" ) ELSE ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!!CURSOR_SAMPLE!" )
-			
+			IF "!EDIT_BUFFER:~0,1!"=="3" (
+				SET /A "TEMPVARI00=OCTAVE + !EDIT_BUFFER:~3,1!"
+				SET "EDIT_BUFFER=!EDIT_BUFFER:~0,3!!TEMPVARI00!"
+				IF !SAMPLE_COUNTER! NEQ 0 IF !CURSOR_SAMPLE! LSS 10 ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!0!CURSOR_SAMPLE!" ) ELSE ( SET "EDIT_BUFFER=5!EDIT_BUFFER:~1,3!!CURSOR_SAMPLE!" )
+			)
 		REM -- SAMPLE
 		) ELSE IF !TEMPVARI03! EQU 1 (
 			IF !ERRORLEVEL! LEQ 57 IF !ERRORLEVEL! GEQ 48 (
 				SET /A "TEMPVARI00=((CURSOR_X / 7) * 19) + 6,TEMPVARI01=!ERRORLEVEL! - 48" 
 				CALL :R_INSERT_NUMBER !TEMPVARI00! !CURSOR_LINE! !TEMPVARI01! 1 1
 				SET "EDIT_BUFFER=2!TEMPVARI00!"
-			) ELSE IF !ERRORLEVEL! EQU 46 ( SET "EDIT_BUFFER=2__" )
+			) ELSE IF !ERRORLEVEL! EQU 46 ( 
+				SET "EDIT_BUFFER=2__" 
+			)
 			
 		REM -- VOLUME
 		) ELSE IF !TEMPVARI03! EQU 2 (
@@ -359,11 +371,19 @@ IF !TRACKER_MODE! EQU 0 (
 			
 			IF !ERRORLEVEL! EQU 46 SET "EDIT_BUFFER=1_"
 			
-		REM -- EFFECT 1, TYPE
-		) ELSE IF !TEMPVARI03! EQU 3 (
-			BREAK
+		REM -- EFFECTS
+		) ELSE (
+			SET /A "TEMPVARI00=(^!(TEMPVARI03 - 3) | ^!(TEMPVARI03 - 5)) + ((^!(TEMPVARI03 - 4) | ^!(TEMPVARI03 - 6)) * 2)"
+			REM -- EFFECT TYPE
+			IF !TEMPVARI00! EQU 1 ( 
+				CALL :R_ERRORLEVEL_TO_EFFECT !ERRORLEVEL!
+			) ELSE IF !TEMPVARI00! EQU 2 IF !ERRORLEVEL! LEQ 57 IF !ERRORLEVEL! GEQ 48 (
+				SET /A "TEMPVARI00=((CURSOR_X / 7) * 19) + 12 + ((TEMPVARI03 - 4) * 2),TEMPVARI01=!ERRORLEVEL! - 48" 
+				CALL :R_INSERT_NUMBER !TEMPVARI00! !CURSOR_LINE! !TEMPVARI01! 1 1
+				SET "EDIT_BUFFER=2!TEMPVARI00!"
+			)	
 		)
-		
+
 		IF DEFINED EDIT_BUFFER CALL :EDIT_PATTERN
 	)
 
@@ -774,6 +794,19 @@ FOR /L %%A IN (0, 1, 99) DO IF DEFINED SYMODULE_PAT%%A (
 )
 GOTO :EOF
 
+:R_ERRORLEVEL_TO_EFFECT ERRORLEVEL
+SET "EDIT_BUFFER="
+IF %~1 EQU 69 SET "EDIT_BUFFER=3E00"
+IF %~1 EQU 83 SET "EDIT_BUFFER=3S00"
+IF %~1 EQU 68 SET "EDIT_BUFFER=3D00"
+IF %~1 EQU 67 SET "EDIT_BUFFER=3C00"
+IF %~1 EQU 66 SET "EDIT_BUFFER=3B00"
+IF %~1 EQU 80 SET "EDIT_BUFFER=3P50"
+IF %~1 EQU 52 SET "EDIT_BUFFER=3400"
+
+IF %~1 EQU 46 SET "EDIT_BUFFER=3___"
+GOTO :EOF
+
 REM 00 01 02
 :EDIT_PATTERN
 SET /A "TEMPVARI00=CURSOR_ROWS * 73,TEMPVARI01=CURSOR_X - ((CURSOR_X / 7) * 7),CURSOR_ROWS+=EDITSTEP"
@@ -792,7 +825,7 @@ IF !TEMPVARI01! EQU 0 (
 ) ELSE IF !TEMPVARI01! EQU 6 (
 	SET /A "TEMPVARI00+=10 + ((CURSOR_X / 7) * 12)"
 )
-SET /A "TEMPVARI02=TEMPVARI00 + !EDIT_BUFFER:~0,1!"
+SET /A "TEMPVARI02=TEMPVARI00 + 0x0!EDIT_BUFFER:~0,1!"
 SET "SYMODULE_PAT!CURSOR_POINTED_FRAME!=!SYMODULE_PAT%CURSOR_POINTED_FRAME%:~0,%TEMPVARI00%!!EDIT_BUFFER:~1!!SYMODULE_PAT%CURSOR_POINTED_FRAME%:~%TEMPVARI02%!"
 SET "EDIT_BUFFER="
 GOTO :EOF
@@ -805,13 +838,28 @@ GOTO :EOF
 :: --------------------------------------------------------------------------------------------
 :: --------------------------------------------------------------------------------------------
 
-REM 00 01 02
+REM 00 01 02 03 04 05 06
 :SAVE_MODULE PATH
-REM -- HEADERS --
+REM -- HEADERS
 BREAK>"%~1"
-FOR /L %%A IN (0, 1, 396) DO IF NOT "!SYMODULE_FRAME:~%%A,1!"=="" SET "TEMPVARI02=%%A"
-SET /A "TEMPVARI00=(SY_MODULE_FORMAT_VER >> 8) & 0xFF,TEMPVARI01=SY_MODULE_FORMAT_VER & 0xFF,TEMPVARI02=(TEMPVARI02 << 7) | SYMODULE_HIGHLIGHT"
-RWIB "%~1" WRITE DEC 83 89 84 77 !TEMPVARI00! !TEMPVARI01! !SYMODULE_ROWS! !SYMODULE_TEMPO! !TEMPVARI02! !SAMPLE_COUNTER! 0 0 0 0 0
+
+REM -- 0x0004, 2, Module format version
+SET /A "TEMPVARI00=(SY_MODULE_FORMAT_VER >> 8) & 0xFF,TEMPVARI01=SY_MODULE_FORMAT_VER & 0xFF"
+
+REM -- 0x0006, 2, The amount of the rows of the module, The tempo of the module
+SET /A "TEMPVARI02=(SYMODULE_ROWS << 1) | SYMODULE_TEMPO >> 8,TEMPVARI03=SYMODULE_TEMPO & 0xFF"
+
+REM -- 0x0008, 2, The length of `SYMODULE_FRAME`, The highlight position of the module
+FOR /L %%A IN (0, 1, 396) DO IF NOT "!SYMODULE_FRAME:~%%A,1!"=="" SET "TEMPVARI04=%%A"
+SET /A "TEMPVARI05=((TEMPVARI04 << 7) & 0xFF) | SYMODULE_HIGHLIGHT & 0x7F,TEMPVARI04=(TEMPVARI04 >> 1) & 0xFF"
+
+REM -- 0x000A, 1, The amount of the patterns of the module
+SET "TEMPVARI06=0"
+FOR /L %%A IN (0, 1, 99) DO IF DEFINED SYMODULE_PAT%%A SET /A "TEMPVARI06+=1"
+
+RWIB "%~1" WRITE DEC 83 89 84 77 !TEMPVARI00! !TEMPVARI01! !TEMPVARI02! !TEMPVARI03! !TEMPVARI04! !TEMPVARI05! !TEMPVARI06! 0 0 0 0 0
+
+REM -- 0x0010, 64 + x, The title of the module, The author of the module, Frames data
 SET "TEMPVARI00="
 SET "TEMPVARI01="
 FOR /L %%A IN (0, 1, 31) DO (
@@ -820,7 +868,7 @@ FOR /L %%A IN (0, 1, 31) DO (
 )
 RWIB "%~1" WRITE ASCII "!TEMPVARI00!!TEMPVARI01!!SYMODULE_FRAME!"
 
-REM -- PATTERNS --
+REM -- PATTERNS
 IF !SYMODULE_ROWS! LEQ 100 (
 	FOR /L %%A IN (0, 1, 99) DO IF DEFINED SYMODULE_PAT%%A (
 		RWIB "%~1" WRITE DEC %%A
@@ -833,6 +881,8 @@ IF !SYMODULE_ROWS! LEQ 100 (
 		RWIB "%~1" WRITE ASCII "!SYMODULE_PAT%%A:~4096!"
 	)
 )
+
+REM -- SAMPLES
 GOTO :EOF
 
 :SAVE_CONFIG
